@@ -5,25 +5,63 @@ public class PlayerController : MonoBehaviour
     private float InputX, InputZ, Speed;
     private CharacterController CC;
     private Camera cam;
+    private Animator anim;
     private Vector3 desLookDir;
     private Vector3 desMoveDir;
+    private float gravity;
 
     [SerializeField] float rotationSpeed = 0.3f;
     [SerializeField] float moveSpeed = 1f;
     [SerializeField] float allowRotation = 0.1f;
-    [SerializeField] float gravity;
+    [SerializeField] float maxGravity = 100f;
+    [SerializeField] float accGravity = 9.8f;
 
     void Start()
     {
         CC = GetComponent<CharacterController>();
+        anim = GetComponent<Animator>();
         cam = Camera.main;
     }
 
     void Update()
     {
+        Gravity();
+
+        if (Input.GetMouseButton(1))
+        {
+            anim.SetBool("Aiming", true);
+        }
+        else
+        {
+            anim.SetBool("Aiming", false);
+        }
         InputX = Input.GetAxis("Horizontal");
         InputZ = Input.GetAxis("Vertical");
         InputDecider();
+    }
+
+    void Gravity()
+    {
+        if (CC.isGrounded)
+        {
+            gravity = -0.5f * Time.deltaTime;
+        }
+        else
+        {
+            if (gravity > -maxGravity)
+            {
+                gravity -= accGravity * Time.deltaTime;
+            }
+        }
+        CC.Move(new Vector3(0, gravity, 0) * Time.deltaTime);
+        if (gravity < -3f)
+        {
+            anim.SetBool("Grounded", false);
+        }
+        else
+        {
+            anim.SetBool("Grounded", true);
+        }
     }
 
     void InputDecider()
@@ -33,10 +71,12 @@ public class PlayerController : MonoBehaviour
         {
             PlayerRotation();
             PlayerMovement();
+            anim.SetFloat("InputMagnitude", Speed);
         }
         else
         {
             desMoveDir = Vector3.zero;
+            anim.SetFloat("InputMagnitude", Speed);
         }
     }
 
@@ -55,18 +95,8 @@ public class PlayerController : MonoBehaviour
 
     void PlayerMovement()
     {
-        if (CC.isGrounded)
-        {
-            gravity = 0;
-        }
-        else
-        {
-            gravity -= 9.8f * Time.deltaTime;
-        }
-
         desMoveDir = transform.forward.normalized * (Time.deltaTime * moveSpeed);
-        desMoveDir = new Vector3(desMoveDir.x, gravity, desMoveDir.z);
+        desMoveDir.y = 0;
         CC.Move(desMoveDir);
-
     }
 }
