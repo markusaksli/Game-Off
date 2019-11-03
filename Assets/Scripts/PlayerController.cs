@@ -4,11 +4,13 @@ public class PlayerController : MonoBehaviour
 {
     private float InputX, InputZ, Speed, jumpVelocity;
     private CharacterController CC;
+    private Rigidbody RB;
     private Camera cam;
     private Animator anim;
     private Vector3 desLookDir;
     private Vector3 desMoveDir;
-
+    private bool justJumped = false;
+    private bool flyNext = false;
     public float gravity;
 
     public enum PlayerState { Default, Aiming, Rolling, Flying, Falling, Jumping };
@@ -25,10 +27,12 @@ public class PlayerController : MonoBehaviour
 
     void Start()
     {
+        Cursor.lockState = CursorLockMode.Locked;
         currentState = PlayerState.Default;
         CC = GetComponent<CharacterController>();
         anim = GetComponent<Animator>();
         cam = Camera.main;
+        RB = GetComponent<Rigidbody>();
     }
 
     void Update()
@@ -57,6 +61,7 @@ public class PlayerController : MonoBehaviour
             if (currentState == PlayerState.Default)
             {
                 currentState = PlayerState.Jumping;
+                flyNext = false;
             }
             //Start falling if flying
             else if (currentState == PlayerState.Flying)
@@ -104,6 +109,7 @@ public class PlayerController : MonoBehaviour
 
             case PlayerState.Falling:
                 Gravity();
+                justJumped = false;
                 anim.SetBool("Jump", false);
                 anim.SetBool("Grounded", false);
                 anim.SetBool("Flying", false);
@@ -224,15 +230,36 @@ public class PlayerController : MonoBehaviour
     void Jump()
     {
         anim.SetBool("Grounded", false);
-        if (jumpVelocity < maxJumpVelocity)
+        if (!justJumped)
         {
-            jumpVelocity = Mathf.Lerp(jumpVelocity, maxJumpVelocity, jumpVelocityAcc * Time.deltaTime);
+            jumpVelocity = maxJumpVelocity;
+            justJumped = true;
         }
         else
         {
-            currentState = PlayerState.Falling;
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                flyNext = true;
+            }
+            if (jumpVelocity < 0)
+            {
+                if (flyNext)
+                {
+                    currentState = PlayerState.Flying;
+                }
+                else
+                {
+                    currentState = PlayerState.Falling;
+                }
+                justJumped = false;
+                flyNext = false;
+            }
+            else
+            {
+                jumpVelocity -= jumpVelocityAcc * Time.deltaTime;
+            }
         }
-        CC.Move(new Vector3(0, jumpVelocity, 0));
+        CC.Move(new Vector3(0, jumpVelocity * Time.deltaTime, 0));
     }
 
     void Fly()
@@ -252,6 +279,8 @@ public class PlayerController : MonoBehaviour
         {
             currentState = PlayerState.Default;
             anim.SetBool("Grounded", true);
+            anim.SetBool("Jump", false);
+            anim.SetBool("Flying", false);
         }
     }
 
