@@ -12,6 +12,8 @@ public class PlayerController : MonoBehaviour
     private bool justJumped = false;
     private bool flyNext = false;
     public float gravity;
+    Transform chest;
+    public Transform aimPoint;
 
     public enum PlayerState { Default, Aiming, Rolling, Flying, Falling, Jumping };
     public PlayerState currentState;
@@ -24,6 +26,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float maxJumpVelocity = 100f;
     [SerializeField] float jumpVelocityAcc = 100f;
     [SerializeField] float accGravity = 9.8f;
+    [SerializeField] Vector3 Offset;
 
     void Start()
     {
@@ -31,6 +34,7 @@ public class PlayerController : MonoBehaviour
         currentState = PlayerState.Default;
         CC = GetComponent<CharacterController>();
         anim = GetComponent<Animator>();
+        chest = anim.GetBoneTransform(HumanBodyBones.Chest);
         cam = Camera.main;
         RB = GetComponent<Rigidbody>();
     }
@@ -206,7 +210,12 @@ public class PlayerController : MonoBehaviour
         }
 
         float lookX = Input.GetAxis("Mouse X");
+        float lookY = Input.GetAxis("Mouse Y");
         transform.Rotate(Vector3.up, lookX * Time.deltaTime * rotationSpeed * 1000);
+
+        aimPoint.Translate(Vector3.up * lookY * Time.deltaTime);
+        chest.LookAt(aimPoint);
+        chest.rotation = chest.rotation * Quaternion.Euler(Offset);
 
         Speed = new Vector2(InputX, InputZ).sqrMagnitude;
         if (Speed > allowRotation)
