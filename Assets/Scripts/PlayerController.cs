@@ -2,6 +2,7 @@
 
 public class PlayerController : MonoBehaviour
 {
+    //References
     private float InputX, InputZ, Speed, jumpVelocity;
     private CharacterController CC;
     private Rigidbody RB;
@@ -15,9 +16,11 @@ public class PlayerController : MonoBehaviour
     Transform chest;
     public Transform aimPoint;
 
+    //Player States
     public enum PlayerState { Default, Aiming, Rolling, Flying, Falling, Jumping };
     public PlayerState currentState;
 
+    //Movement variables
     [SerializeField] float rotationSpeed = 0.3f;
     [SerializeField] float moveSpeed = 1f;
     [SerializeField] float allowRotation = 0.1f;
@@ -41,6 +44,7 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
+        //Constantly update Input values
         InputX = Input.GetAxis("Horizontal");
         InputZ = Input.GetAxis("Vertical");
         InputDecider();
@@ -79,7 +83,7 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-
+        //Choose logic based on PlayerState
         switch (currentState)
         {
             case PlayerState.Default:
@@ -122,10 +126,12 @@ public class PlayerController : MonoBehaviour
         }
 
     }
+    //TODO: Implement Shooting, Rolling, Damage and Death states and logic
 
-    void Gravity()
+    void Gravity() //Used to glue the player to the ground and control falling
     {
-        if (gravity < -maxGravity)
+        //TODO: Raycast for ground check and Damage/Death
+        if (gravity < -maxGravity) //Only sets changes PLayerState and animator to falling if falling at maxGravity speed
         {
             anim.SetBool("Grounded", false);
             currentState = PlayerState.Falling;
@@ -153,12 +159,12 @@ public class PlayerController : MonoBehaviour
         CC.Move(new Vector3(0, gravity, 0) * Time.deltaTime);
     }
 
-    void DefaultMovement()
+    void DefaultMovement() //Used for movement while not aiming and while mid air
     {
-        Speed = new Vector2(InputX, InputZ).normalized.sqrMagnitude;
+        Speed = new Vector2(InputX, InputZ).normalized.sqrMagnitude; //Start moving if input is above Deadzone threshold
         if (Speed > allowRotation)
         {
-
+            //Use camera do determine rotation
             var forward = cam.transform.forward;
             var right = cam.transform.right;
             forward.y = 0;
@@ -167,8 +173,9 @@ public class PlayerController : MonoBehaviour
             forward.Normalize();
 
             desLookDir = forward * InputZ + right * InputX;
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(desLookDir), rotationSpeed);
-
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(desLookDir), rotationSpeed); //Rotate towards movement input
+            
+            //Choose movement speed based on PlayerState and sprint button
             if (currentState == PlayerState.Default)
             {
                 if (Input.GetKey(KeyCode.LeftShift))
@@ -192,9 +199,9 @@ public class PlayerController : MonoBehaviour
                 desMoveDir = transform.forward.normalized * (Time.deltaTime * moveSpeed);
             }
             desMoveDir.y = 0;
-            CC.Move(desMoveDir);
+            CC.Move(desMoveDir); //Move forward at movement speed
         }
-        else
+        else //If input is below threshold, zero movement
         {
             desMoveDir = Vector3.zero;
             anim.SetFloat("InputMagnitude", Speed);
