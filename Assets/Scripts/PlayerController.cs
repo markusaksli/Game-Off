@@ -2,24 +2,30 @@
 
 public class PlayerController : MonoBehaviour
 {
-    private float InputX, InputZ, Speed, jumpVelocity;
+    private float InputX, InputZ, Speed, jumpVelocity, tempSpeed;
     private CharacterController CC;
-    private Rigidbody RB;
     private Camera cam;
     private Animator anim;
     private Vector3 desLookDir;
     private Vector3 desMoveDir;
     private bool justJumped = false;
     private bool flyNext = false;
+    public float tempMoveSpeed;
     public float gravity;
     Transform chest;
     public Transform aimPoint;
+    public LineRenderer aimLine;
 
     public enum PlayerState { Default, Aiming, Rolling, Flying, Falling, Jumping };
     public PlayerState currentState;
 
     [SerializeField] float rotationSpeed = 0.3f;
     [SerializeField] float moveSpeed = 1f;
+    [SerializeField] float jumpMoveSpeed = 1f;
+    [SerializeField] float sprintSpeed = 1f;
+    [SerializeField] float flySpeed = 1f;
+    [SerializeField] float moveSmooth = 1f;
+    [SerializeField] float stopSmooth = 1f;
     [SerializeField] float allowRotation = 0.1f;
     [SerializeField] float maxGravity = 100f;
     [SerializeField] float flyGravity = 100f;
@@ -30,13 +36,13 @@ public class PlayerController : MonoBehaviour
 
     void Start()
     {
+        aimLine.enabled = false;
         Cursor.lockState = CursorLockMode.Locked;
         currentState = PlayerState.Default;
         CC = GetComponent<CharacterController>();
         anim = GetComponent<Animator>();
         chest = anim.GetBoneTransform(HumanBodyBones.Chest);
         cam = Camera.main;
-        RB = GetComponent<Rigidbody>();
     }
 
     void Update()
@@ -64,6 +70,7 @@ public class PlayerController : MonoBehaviour
             //Only jump if in default
             if (currentState == PlayerState.Default)
             {
+                anim.SetTrigger("Jump");
                 currentState = PlayerState.Jumping;
                 flyNext = false;
             }
@@ -92,7 +99,14 @@ public class PlayerController : MonoBehaviour
 
             case PlayerState.Aiming:
                 Gravity();
+                aimLine.enabled = true;
                 anim.SetBool("Aiming", true);
+                if (!Input.GetMouseButton(1))
+                {
+                    anim.SetBool("Aiming", false);
+                    aimLine.enabled = false;
+                    currentState = PlayerState.Default;
+                }
                 AimMovement();
                 break;
 
@@ -106,7 +120,6 @@ public class PlayerController : MonoBehaviour
                 break;
 
             case PlayerState.Jumping:
-                anim.SetBool("Jump", true);
                 Jump();
                 DefaultMovement();
                 break;
@@ -114,7 +127,6 @@ public class PlayerController : MonoBehaviour
             case PlayerState.Falling:
                 Gravity();
                 justJumped = false;
-                anim.SetBool("Jump", false);
                 anim.SetBool("Grounded", false);
                 anim.SetBool("Flying", false);
                 DefaultMovement();
@@ -141,6 +153,8 @@ public class PlayerController : MonoBehaviour
             if (currentState == PlayerState.Falling)
             {
                 currentState = PlayerState.Default;
+                desMoveDir = Vector3.zero;
+                tempMoveSpeed = 0;
             }
         }
         else
@@ -173,47 +187,45 @@ public class PlayerController : MonoBehaviour
             {
                 if (Input.GetKey(KeyCode.LeftShift))
                 {
-                    desMoveDir = transform.forward.normalized * (Time.deltaTime * moveSpeed * 1.5f);
-                    anim.SetFloat("InputMagnitude", Speed);
+                    tempMoveSpeed = Mathf.Lerp(tempMoveSpeed, sprintSpeed, moveSmooth * Time.deltaTime) * Time.deltaTime;
+                    tempSpeed = Mathf.Lerp(tempSpeed, Speed, moveSmooth / 15 * Time.deltaTime);
+                    anim.SetFloat("InputMagnitude", tempSpeed);
                 }
                 else
                 {
-                    desMoveDir = transform.forward.normalized * (Time.deltaTime * moveSpeed);
-                    Speed = Speed / 1.5f;
-                    anim.SetFloat("InputMagnitude", Speed);
+                    tempMoveSpeed = Mathf.Lerp(tempMoveSpeed, moveSpeed, moveSmooth * Time.deltaTime) * Time.deltaTime;
+                    tempSpeed = Mathf.Lerp(tempSpeed, Speed / 1.5f, moveSmooth / 15 * Time.deltaTime);
+                    anim.SetFloat("InputMagnitude", tempSpeed);
                 }
             }
             else if (currentState == PlayerState.Flying)
             {
-                desMoveDir = transform.forward.normalized * (Time.deltaTime * moveSpeed * 2);
+                tempMoveSpeed = Mathf.Lerp(tempMoveSpeed, flySpeed, moveSmooth * Time.deltaTime) * Time.deltaTime;
             }
             else
             {
-                desMoveDir = transform.forward.normalized * (Time.deltaTime * moveSpeed);
+                tempMoveSpeed = Mathf.Lerp(tempMoveSpeed, jumpMoveSpeed, moveSmooth * Time.deltaTime) * Time.deltaTime;
             }
+            desMoveDir = transform.forward.normalized * tempMoveSpeed;
             desMoveDir.y = 0;
             CC.Move(desMoveDir);
         }
         else
         {
-            desMoveDir = Vector3.zero;
-            anim.SetFloat("InputMagnitude", Speed);
+            tempMoveSpeed = 0;
+            desMoveDir = Vector3.Slerp(desMoveDir, Vector3.zero, stopSmooth * Time.deltaTime);
+            tempSpeed = Mathf.Lerp(tempSpeed, Speed, stopSmooth * Time.deltaTime);
+            anim.SetFloat("InputMagnitude", tempSpeed);
         }
     }
 
     void AimMovement()
     {
-        if (!Input.GetMouseButton(1))
-        {
-            anim.SetBool("Aiming", false);
-            currentState = PlayerState.Default;
-        }
-
         float lookX = Input.GetAxis("Mouse X");
         float lookY = Input.GetAxis("Mouse Y");
         transform.Rotate(Vector3.up, lookX * Time.deltaTime * rotationSpeed * 1000);
 
-        aimPoint.Translate(Vector3.up * lookY * Time.deltaTime);
+        aimPoint.Translate(Vector3.up * lookY * Time.deltaTime, Space.World);
         chest.LookAt(aimPoint);
         chest.rotation = chest.rotation * Quaternion.Euler(Offset);
 
@@ -234,6 +246,8 @@ public class PlayerController : MonoBehaviour
         {
             desMoveDir = Vector3.zero;
         }
+        anim.SetFloat("InputX", InputX);
+        anim.SetFloat("InputY", InputZ);
     }
 
     void Jump()
@@ -290,6 +304,8 @@ public class PlayerController : MonoBehaviour
             anim.SetBool("Grounded", true);
             anim.SetBool("Jump", false);
             anim.SetBool("Flying", false);
+            desMoveDir = Vector3.zero;
+            tempMoveSpeed = 0;
         }
     }
 
