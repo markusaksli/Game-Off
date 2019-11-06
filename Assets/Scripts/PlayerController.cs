@@ -223,7 +223,7 @@ public class PlayerController : MonoBehaviour
             forward.Normalize();
 
             desLookDir = forward * InputZ + right * InputX;
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(desLookDir), rotationSpeed); //Rotate towards movement input
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(desLookDir), rotationSpeed*Time.deltaTime); //Rotate towards movement input
 
             //Choose movement speed based on PlayerState and sprint button
             if (currentState == PlayerState.Default)
