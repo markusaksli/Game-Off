@@ -183,14 +183,12 @@ public class PlayerController : MonoBehaviour
             }
             else
             {
-                float tempDist = Vector3.Angle(transform.up, hit.normal) / 90 * 30;
-                Debug.Log(tempDist);
-                if (hit.distance < tempDist)
+                if (CC.isGrounded)
                 {
-                    gravVector.x += (1f - hit.normal.y) * hit.normal.x * 0.7f;
-                    gravVector.z += (1f - hit.normal.y) * hit.normal.z * 0.7f;
-                    gravVector.y -= 10f;
-                    CC.Move(gravVector * Time.deltaTime);
+                    gravVector.x += (1f - hit.normal.y) * hit.normal.x * 0.7f * Time.deltaTime;
+                    gravVector.z += (1f - hit.normal.y) * hit.normal.z * 0.7f * Time.deltaTime;
+                    gravVector.y -= Vector3.Angle(transform.up, hit.normal) / 90 * 10f * Time.deltaTime;
+                    CC.Move(gravVector);
                 }
             }
         }
