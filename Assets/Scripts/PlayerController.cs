@@ -2,7 +2,7 @@
 
 public class PlayerController : MonoBehaviour
 {
-    private float InputX, InputZ, Speed, jumpVelocity, tempSpeed;
+    private float InputX, InputZ, Speed, jumpVelocity, tempSpeed, tempMoveSpeed;
     private CharacterController CC;
     private Camera cam;
     private Animator anim;
@@ -10,18 +10,25 @@ public class PlayerController : MonoBehaviour
     private Vector3 desMoveDir;
     private bool justJumped = false;
     private bool flyNext = false;
-    public float tempMoveSpeed;
+    public bool sliding;
+    public bool isGrounded;
+    public float currentAngle;
+    RaycastHit hit;
+
     public float gravity;
-    Transform chest;
+    public float gravitySmooth;
     public Transform aimPoint;
     public LineRenderer aimLine;
     Vector3 gravVector;
+    Vector3 tempGravVector;
     //Player States
-    public enum PlayerState { Default, Aiming, Rolling, Flying, Falling, Jumping };
+    public enum PlayerState { Default, Aiming, Flying, Falling, Jumping };
     public PlayerState currentState;
+    public LayerMask groundMask;
 
     //Movement variables
     [SerializeField] float rotationSpeed = 0.3f;
+    [SerializeField] float flyRotationSpeed = 0.3f;
     [SerializeField] float moveSpeed = 1f;
     [SerializeField] float jumpMoveSpeed = 1f;
     [SerializeField] float sprintSpeed = 1f;
@@ -34,7 +41,9 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float maxJumpVelocity = 100f;
     [SerializeField] float jumpVelocityAcc = 100f;
     [SerializeField] float accGravity = 9.8f;
-    [SerializeField] Vector3 Offset;
+    [SerializeField] float slideFriction = 9.8f;
+    [SerializeField] float castOffset = 9.8f;
+    [SerializeField] float castRadius = 9.8f;
 
     void Start()
     {
@@ -43,18 +52,29 @@ public class PlayerController : MonoBehaviour
         currentState = PlayerState.Default;
         CC = GetComponent<CharacterController>();
         anim = GetComponent<Animator>();
-        chest = anim.GetBoneTransform(HumanBodyBones.Chest);
         cam = Camera.main;
+
     }
 
     void Update()
     {
         //Constantly update Input values
+        isGrounded = CC.isGrounded;
+        CheckCollision();
         InputX = Input.GetAxis("Horizontal");
         InputZ = Input.GetAxis("Vertical");
         InputDecider();
     }
 
+    void CheckCollision()
+    {
+        if (isGrounded)
+        {
+            Physics.SphereCast(new Vector3(transform.position.x, transform.position.y + castOffset, transform.position.z), castRadius, Vector3.down, out hit, 2f);
+            currentAngle = Vector3.Angle(transform.up, hit.normal);
+            sliding = (currentAngle > CC.slopeLimit);
+        }
+    }
 
     void InputDecider()
     {
@@ -70,17 +90,12 @@ public class PlayerController : MonoBehaviour
         //Jump and Fly
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            RaycastHit hitJump;
-            Physics.Raycast(transform.position, Vector3.down, out hitJump);
             //Only jump if in default
-            if (currentState == PlayerState.Default)
+            if (currentState == PlayerState.Default && !sliding)
             {
-                if (Vector3.Angle(transform.up, hitJump.normal) <= CC.slopeLimit)
-                {
-                    anim.SetTrigger("Jump");
-                    currentState = PlayerState.Jumping;
-                    flyNext = false;
-                }
+                anim.SetTrigger("Jump");
+                currentState = PlayerState.Jumping;
+                flyNext = false;
             }
             //Start falling if flying
             else if (currentState == PlayerState.Flying)
@@ -88,7 +103,7 @@ public class PlayerController : MonoBehaviour
                 currentState = PlayerState.Falling;
             }
             //Start flying if falling
-            else if (currentState == PlayerState.Falling)
+            else if (currentState == PlayerState.Falling && !CC.isGrounded)
             {
                 currentState = PlayerState.Flying;
             }
@@ -98,12 +113,11 @@ public class PlayerController : MonoBehaviour
         switch (currentState)
         {
             case PlayerState.Default:
-                Gravity();
                 anim.SetBool("Aiming", false);
                 anim.SetBool("Flying", false);
                 anim.SetBool("Grounded", true);
                 jumpVelocity = 0;
-                DefaultMovement();
+                CC.Move((Gravity() + DefaultMovement()) * Time.deltaTime);
                 break;
 
             case PlayerState.Aiming:
@@ -120,76 +134,59 @@ public class PlayerController : MonoBehaviour
                 AimMovement();
                 break;
 
-            case PlayerState.Rolling:
-                break;
-
             case PlayerState.Flying:
                 anim.SetBool("Flying", true);
-                DefaultMovement();
-                Fly();
+                CC.Move((Fly() + DefaultMovement()) * Time.deltaTime);
                 break;
 
             case PlayerState.Jumping:
-                Jump();
-                DefaultMovement();
+                CC.Move((Jump() + DefaultMovement()) * Time.deltaTime);
                 break;
 
             case PlayerState.Falling:
-                Gravity();
                 justJumped = false;
                 anim.SetBool("Grounded", false);
                 anim.SetBool("Flying", false);
-                DefaultMovement();
+                CC.Move((Gravity() + DefaultMovement()) * Time.deltaTime);
                 break;
         }
 
     }
-    //TODO: Implement Shooting, Rolling, Damage and Death states and logic
+    //TODO: Implement Damage and Death states and logic
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.DrawSphere(new Vector3(transform.position.x, transform.position.y + castOffset, transform.position.z), castRadius);
+    }
 
-    void Gravity() //Used to glue the player to the ground and control falling
+    Vector3 Gravity() //Used to glue the player to the ground and control falling
     {
         //TODO: Damage/Death
-        RaycastHit hit;
-        Physics.Raycast(transform.position, Vector3.down, out hit);
-        if (hit.collider)
+        if (isGrounded)
         {
-            if (Vector3.Angle(transform.up, hit.normal) <= CC.slopeLimit)
+            if (!sliding)
             {
-                if (hit.distance > 0.5f)
+                if (currentState == PlayerState.Falling)
                 {
-                    if (gravity > 0)
-                    {
-                        gravity = -1;
-                    }
-                    if (gravity > -maxGravity)
-                    {
-                        gravity -= accGravity * Time.deltaTime;
-                    }
-                    CC.Move(new Vector3(0, gravity, 0) * Time.deltaTime);
-                    currentState = PlayerState.Falling;
+                    gravVector = Vector3.zero;
+                    tempGravVector = Vector3.zero;
+                    desMoveDir = Vector3.zero;
+                    tempMoveSpeed = 0;
+                    currentState = PlayerState.Default;
+                    Debug.Log("LANDED AND RESET GRAVITY");
+                    return new Vector3(0, -10f, 0);
                 }
-                else
-                {
-                    gravity = 10f;
-                    if (currentState == PlayerState.Falling)
-                    {
-                        gravVector = Vector3.zero;
-                        currentState = PlayerState.Default;
-                        desMoveDir = Vector3.zero;
-                        tempMoveSpeed = 0;
-                    }
-                    CC.Move(new Vector3(0, -gravity, 0) * Time.deltaTime);
-                }
+                gravity = 10f;
+                gravVector = new Vector3(0, -gravity, 0);
             }
             else
             {
-                if (CC.isGrounded)
+                currentState = PlayerState.Falling;
+                if (gravVector.y > -maxGravity * currentAngle / 90)
                 {
-                    gravVector.x += (1f - hit.normal.y) * hit.normal.x * 0.7f * Time.deltaTime;
-                    gravVector.z += (1f - hit.normal.y) * hit.normal.z * 0.7f * Time.deltaTime;
-                    gravVector.y -= Vector3.Angle(transform.up, hit.normal) / 90 * 10f * Time.deltaTime;
-                    CC.Move(gravVector);
+                    gravVector.y -= currentAngle / 90 * accGravity * Time.deltaTime;
                 }
+                gravVector.x += (1f - hit.normal.y) * hit.normal.x * slideFriction * Time.deltaTime;
+                gravVector.z += (1f - hit.normal.y) * hit.normal.z * slideFriction * Time.deltaTime;
             }
         }
         else
@@ -202,17 +199,20 @@ public class PlayerController : MonoBehaviour
             {
                 gravity -= accGravity * Time.deltaTime;
             }
-            CC.Move(new Vector3(0, gravity, 0) * Time.deltaTime);
             currentState = PlayerState.Falling;
+            gravVector = new Vector3(0, gravity, 0);
         }
+        Debug.Log("Real gravity: " + gravVector);
+        tempGravVector = Vector3.Slerp(tempGravVector, gravVector, gravitySmooth * Time.deltaTime);
+        return gravVector;
     }
 
-    void DefaultMovement() //Used for movement while not aiming and while mid air
+    Vector3 DefaultMovement() //Used for movement while not aiming and while mid air
     {
         Speed = new Vector2(InputX, InputZ).normalized.sqrMagnitude; //Start moving if input is above Deadzone threshold
         if (Speed > allowRotation)
         {
-            //Use camera do determine rotation
+            //Use camera to determine rotation
             var forward = cam.transform.forward;
             var right = cam.transform.right;
             forward.y = 0;
@@ -221,7 +221,14 @@ public class PlayerController : MonoBehaviour
             forward.Normalize();
 
             desLookDir = forward * InputZ + right * InputX;
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(desLookDir), rotationSpeed*Time.deltaTime); //Rotate towards movement input
+            if (currentState == PlayerState.Flying)
+            {
+                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(desLookDir), flyRotationSpeed * Time.deltaTime); //Rotate towards movement input
+            }
+            else
+            {
+                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(desLookDir), rotationSpeed * Time.deltaTime); //Rotate towards movement input
+            }
 
             //Choose movement speed based on PlayerState and sprint button
             if (currentState == PlayerState.Default)
@@ -249,7 +256,7 @@ public class PlayerController : MonoBehaviour
             }
             desMoveDir = transform.forward.normalized * tempMoveSpeed;
             desMoveDir.y = 0;
-            CC.Move(desMoveDir * Time.deltaTime); //Move forward at movement speed
+            return desMoveDir;
         }
         else //If input is below threshold, zero movement
         {
@@ -257,6 +264,7 @@ public class PlayerController : MonoBehaviour
             desMoveDir = Vector3.Slerp(desMoveDir, Vector3.zero, stopSmooth * Time.deltaTime);
             tempSpeed = Mathf.Lerp(tempSpeed, Speed, stopSmooth * Time.deltaTime);
             anim.SetFloat("InputMagnitude", tempSpeed);
+            return desMoveDir;
         }
     }
 
@@ -264,11 +272,9 @@ public class PlayerController : MonoBehaviour
     {
         float lookX = Input.GetAxis("Mouse X");
         float lookY = Input.GetAxis("Mouse Y");
-        transform.Rotate(Vector3.up, lookX * Time.deltaTime * rotationSpeed * 1000);
+        transform.Rotate(Vector3.up, lookX * Time.deltaTime * rotationSpeed);
 
         aimPoint.Translate(Vector3.up * lookY * Time.deltaTime, Space.World);
-        chest.LookAt(aimPoint);
-        chest.rotation = chest.rotation * Quaternion.Euler(Offset);
 
         Speed = new Vector2(InputX, InputZ).sqrMagnitude;
         if (Speed > allowRotation)
@@ -291,7 +297,7 @@ public class PlayerController : MonoBehaviour
         anim.SetFloat("InputY", InputZ);
     }
 
-    void Jump()
+    Vector3 Jump()
     {
         anim.SetBool("Grounded", false);
         if (!justJumped)
@@ -324,11 +330,22 @@ public class PlayerController : MonoBehaviour
                 jumpVelocity -= jumpVelocityAcc * Time.deltaTime;
             }
         }
-        CC.Move(new Vector3(0, jumpVelocity * Time.deltaTime, 0));
+        return new Vector3(0, jumpVelocity, 0);
     }
 
-    void Fly()
+    Vector3 Fly()
     {
+        if (CC.isGrounded)
+        {
+            currentState = PlayerState.Default;
+            anim.SetBool("Grounded", true);
+            anim.SetBool("Jump", false);
+            anim.SetBool("Flying", false);
+            desMoveDir = Vector3.zero;
+            tempMoveSpeed = 0;
+            return Vector3.zero;
+        }
+
         if (gravity > -flyGravity)
         {
             gravity -= accGravity * Time.deltaTime;
@@ -338,23 +355,7 @@ public class PlayerController : MonoBehaviour
             gravity += accGravity * Time.deltaTime;
         }
 
-        CC.Move(new Vector3(0, gravity, 0) * Time.deltaTime);
-
-        RaycastHit hit;
-        Physics.Raycast(transform.position, Vector3.down, out hit);
-        if (!hit.collider)
-        {
-            return;
-        }
-        if (hit.distance < 0.5f && Vector3.Angle(transform.up, hit.normal) <= CC.slopeLimit || CC.isGrounded)
-        {
-            currentState = PlayerState.Default;
-            anim.SetBool("Grounded", true);
-            anim.SetBool("Jump", false);
-            anim.SetBool("Flying", false);
-            desMoveDir = Vector3.zero;
-            tempMoveSpeed = 0;
-        }
+        return new Vector3(0, gravity, 0);
     }
 
 }
