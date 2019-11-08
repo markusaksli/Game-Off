@@ -41,7 +41,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float stopSmooth = 1f;
     [SerializeField] float allowRotation = 0.1f;
     [SerializeField] float maxGravity = 100f;
-    [SerializeField] float flyGravity = 100f;
+    [SerializeField] public float flyGravity = 100f;
     [SerializeField] float maxJumpVelocity = 100f;
     [SerializeField] float jumpVelocityAcc = 100f;
     [SerializeField] float accGravity = 9.8f;
@@ -376,14 +376,7 @@ public class PlayerController : MonoBehaviour
             return Vector3.zero;
         }
 
-        if (gravity > -flyGravity)
-        {
-            gravity -= accGravity * Time.deltaTime;
-        }
-        else if (gravity < -flyGravity)
-        {
-            gravity += accGravity * Time.deltaTime;
-        }
+        gravity = Mathf.Lerp(gravity, -flyGravity, 5f * Time.deltaTime);
 
         return new Vector3(0, gravity, 0);
     }
