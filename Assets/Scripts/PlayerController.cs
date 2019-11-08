@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Doozy.Engine.Progress;
+using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
@@ -10,10 +11,13 @@ public class PlayerController : MonoBehaviour
     private Vector3 desMoveDir;
     private bool justJumped = false;
     private bool flyNext = false;
+    public float flyMeter;
+    public float maxFlyMeter;
     public bool sliding;
     public bool isGrounded;
     public float currentAngle;
     RaycastHit hit;
+    Progressor flyBar;
 
     public float gravity;
     public float gravitySmooth;
@@ -52,8 +56,8 @@ public class PlayerController : MonoBehaviour
         currentState = PlayerState.Default;
         CC = GetComponent<CharacterController>();
         anim = GetComponent<Animator>();
+        flyBar = GetComponent<Progressor>();
         cam = Camera.main;
-
     }
 
     void Update()
@@ -70,7 +74,7 @@ public class PlayerController : MonoBehaviour
     {
         if (isGrounded)
         {
-            Physics.SphereCast(new Vector3(transform.position.x, transform.position.y + castOffset, transform.position.z), castRadius, Vector3.down, out hit, 2f);
+            Physics.SphereCast(new Vector3(transform.position.x, transform.position.y + castOffset, transform.position.z), castRadius, Vector3.down, out hit, 0.55f);
             currentAngle = Vector3.Angle(transform.up, hit.normal);
             sliding = (currentAngle > CC.slopeLimit);
         }
@@ -113,6 +117,11 @@ public class PlayerController : MonoBehaviour
         switch (currentState)
         {
             case PlayerState.Default:
+                if (flyMeter < maxFlyMeter)
+                {
+                    flyMeter += 3 * Time.deltaTime;
+                    flyBar.SetValue(flyMeter);
+                }
                 anim.SetBool("Aiming", false);
                 anim.SetBool("Flying", false);
                 anim.SetBool("Grounded", true);
@@ -135,6 +144,17 @@ public class PlayerController : MonoBehaviour
                 break;
 
             case PlayerState.Flying:
+                if (flyMeter <= 0)
+                {
+                    Debug.Log("Meter ran out");
+                    currentState = PlayerState.Falling;
+                    break;
+                }
+                else
+                {
+                    flyMeter -= Time.deltaTime;
+                    flyBar.SetValue(flyMeter);
+                }
                 anim.SetBool("Flying", true);
                 CC.Move((Fly() + DefaultMovement()) * Time.deltaTime);
                 break;
@@ -172,7 +192,6 @@ public class PlayerController : MonoBehaviour
                     desMoveDir = Vector3.zero;
                     tempMoveSpeed = 0;
                     currentState = PlayerState.Default;
-                    Debug.Log("LANDED AND RESET GRAVITY");
                     return new Vector3(0, -10f, 0);
                 }
                 gravity = 10f;
@@ -180,13 +199,21 @@ public class PlayerController : MonoBehaviour
             }
             else
             {
-                currentState = PlayerState.Falling;
-                if (gravVector.y > -maxGravity * currentAngle / 90)
+                /*gravVector.y = -200f * currentAngle / 90;
+                gravVector.x += (1f - hit.normal.y) * hit.normal.x * slideFriction * (90 / currentAngle) * Time.deltaTime;
+                gravVector.z += (1f - hit.normal.y) * hit.normal.z * slideFriction * (90 / currentAngle) * Time.deltaTime;*/
+                /*if (gravVector.y > -maxGravity * currentAngle / 90)
                 {
                     gravVector.y -= currentAngle / 90 * accGravity * Time.deltaTime;
+                }*/
+                currentState = PlayerState.Falling;
+                Vector3 c = Vector3.Cross(hit.normal, Vector3.up);
+                gravVector = -Vector3.Cross(c, hit.normal).normalized * slideFriction * Mathf.Pow(Mathf.Sin(Mathf.Deg2Rad * currentAngle), 4);
+                if (gravVector.y < -maxGravity)
+                {
+                    gravVector.y = -maxGravity;
                 }
-                gravVector.x += (1f - hit.normal.y) * hit.normal.x * slideFriction * Time.deltaTime;
-                gravVector.z += (1f - hit.normal.y) * hit.normal.z * slideFriction * Time.deltaTime;
+                return gravVector;
             }
         }
         else
@@ -202,8 +229,7 @@ public class PlayerController : MonoBehaviour
             currentState = PlayerState.Falling;
             gravVector = new Vector3(0, gravity, 0);
         }
-        Debug.Log("Real gravity: " + gravVector);
-        tempGravVector = Vector3.Slerp(tempGravVector, gravVector, gravitySmooth * Time.deltaTime);
+        //tempGravVector = Vector3.Slerp(tempGravVector, gravVector, gravitySmooth * Time.deltaTime);
         return gravVector;
     }
 
@@ -307,6 +333,10 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
+            if (isGrounded)
+            {
+                currentState = PlayerState.Falling;
+            }
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 flyNext = true;
