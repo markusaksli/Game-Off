@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    //References
     private float InputX, InputZ, Speed, jumpVelocity, tempSpeed, tempMoveSpeed;
     private CharacterController CC;
     private Camera cam;
@@ -11,65 +12,70 @@ public class PlayerController : MonoBehaviour
     private Vector3 desMoveDir;
     private bool justJumped = false;
     private bool flyNext = false;
-    public float flyMeter;
-    public float maxFlyMeter;
-    public bool sliding;
-    public bool isGrounded;
-    public float currentAngle;
     RaycastHit hit;
     Progressor flyBar;
 
-    public float gravity;
+    [Header("Player Info:")]
+    public float flyMeter;
+    public float currentAngle;
+    public bool sliding;
+    public bool isGrounded;
+    public PlayerState currentState;
+    public enum PlayerState { Default, Aiming, Flying, Falling, Jumping };
+    [Space(20)]
+
+    [Header("Gravity:")]
+    public float accGravity;
     public float gravitySmooth;
+    public float maxGravity;
+    public float slideFriction;
+    public float flyGravity;
+    public float maxFlyMeter;
+    Vector3 gravVector;
+    float gravity;
+    public float castOffset;
+    public float castRadius;
+    [Space(20)]
+
+    [Header("Movement:")]
+    [SerializeField] float allowRotation;
+    [SerializeField] float rotationSpeed;
+    [SerializeField] float moveSmooth;
+    [SerializeField] float moveSpeed;
+    [SerializeField] float sprintSpeed;
+    [SerializeField] float jumpMoveSpeed;
+    [SerializeField] float flyRotationSpeed;
+    [SerializeField] float flySpeed;
+    [SerializeField] float stopSmooth;
+    [SerializeField] float maxJumpVelocity;
+    [SerializeField] float jumpVelocityAcc;
+    [Space(20)]
+
     public Transform aimPoint;
     public LineRenderer aimLine;
-    Vector3 gravVector;
-    Vector3 tempGravVector;
-    //Player States
-    public enum PlayerState { Default, Aiming, Flying, Falling, Jumping };
-    public PlayerState currentState;
-    public LayerMask groundMask;
-
-    //Movement variables
-    [SerializeField] float rotationSpeed = 0.3f;
-    [SerializeField] float flyRotationSpeed = 0.3f;
-    [SerializeField] float moveSpeed = 1f;
-    [SerializeField] float jumpMoveSpeed = 1f;
-    [SerializeField] float sprintSpeed = 1f;
-    [SerializeField] float flySpeed = 1f;
-    [SerializeField] float moveSmooth = 1f;
-    [SerializeField] float stopSmooth = 1f;
-    [SerializeField] float allowRotation = 0.1f;
-    [SerializeField] float maxGravity = 100f;
-    [SerializeField] public float flyGravity = 100f;
-    [SerializeField] float maxJumpVelocity = 100f;
-    [SerializeField] float jumpVelocityAcc = 100f;
-    [SerializeField] float accGravity = 9.8f;
-    [SerializeField] float slideFriction = 9.8f;
-    [SerializeField] float castOffset = 9.8f;
-    [SerializeField] float castRadius = 9.8f;
-
     void Start()
     {
-        aimLine.enabled = false;
-        Cursor.lockState = CursorLockMode.Locked;
-        currentState = PlayerState.Default;
+        cam = Camera.main;
         CC = GetComponent<CharacterController>();
         anim = GetComponent<Animator>();
         flyBar = GetComponent<Progressor>();
-        cam = Camera.main;
+
+        currentState = PlayerState.Default;
+        aimLine.enabled = false;
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
     }
 
     void Update()
     {
-        //Constantly update Input values
         isGrounded = CC.isGrounded;
         CheckCollision();
-        InputX = Input.GetAxis("Horizontal");
+        InputX = Input.GetAxis("Horizontal"); //Update Input
         InputZ = Input.GetAxis("Vertical");
         InputDecider();
     }
 
+    //Check if slope angle is too great
     void CheckCollision()
     {
         if (isGrounded)
@@ -80,9 +86,10 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    //Get input for state changes and execute state logic
     void InputDecider()
     {
-        //Start aiming if in default
+        //Start aiming if right mouse and in default state
         if (currentState == PlayerState.Default)
         {
             if (Input.GetMouseButton(1))
@@ -94,7 +101,7 @@ public class PlayerController : MonoBehaviour
         //Jump and Fly
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            //Only jump if in default
+            //Only jump if in default and not sliding
             if (currentState == PlayerState.Default && !sliding)
             {
                 anim.SetTrigger("Jump");
@@ -107,7 +114,7 @@ public class PlayerController : MonoBehaviour
                 currentState = PlayerState.Falling;
             }
             //Start flying if falling
-            else if (currentState == PlayerState.Falling && !CC.isGrounded)
+            else if (currentState == PlayerState.Falling && !CC.isGrounded && flyMeter > 0)
             {
                 currentState = PlayerState.Flying;
             }
@@ -117,36 +124,41 @@ public class PlayerController : MonoBehaviour
         switch (currentState)
         {
             case PlayerState.Default:
+                aimLine.enabled = false;
                 if (flyMeter < maxFlyMeter)
                 {
                     flyMeter += 3 * Time.deltaTime;
                     flyBar.SetValue(flyMeter);
                 }
+
                 anim.SetBool("Aiming", false);
                 anim.SetBool("Flying", false);
                 anim.SetBool("Grounded", true);
+
                 jumpVelocity = 0;
-                CC.Move((Gravity() + DefaultMovement()) * Time.deltaTime);
+                CC.Move((Gravity() + DefaultMovement()) * Time.deltaTime); //Move player and execute movement methods
                 break;
 
             case PlayerState.Aiming:
-                Gravity();
-                aimLine.enabled = true;
-                anim.SetBool("Grounded", true);
-                anim.SetBool("Aiming", true);
                 if (!Input.GetMouseButton(1))
                 {
                     anim.SetBool("Aiming", false);
-                    aimLine.enabled = false;
                     currentState = PlayerState.Default;
+                    break;
                 }
-                AimMovement();
+                aimLine.enabled = true;
+
+                anim.SetBool("Grounded", true);
+                anim.SetBool("Aiming", true);
+                anim.SetFloat("InputX", InputX);
+                anim.SetFloat("InputY", InputZ);
+
+                CC.Move((AimMovement() + Gravity()) * Time.deltaTime);
                 break;
 
             case PlayerState.Flying:
                 if (flyMeter <= 0)
                 {
-                    Debug.Log("Meter ran out");
                     currentState = PlayerState.Falling;
                     break;
                 }
@@ -155,7 +167,9 @@ public class PlayerController : MonoBehaviour
                     flyMeter -= Time.deltaTime;
                     flyBar.SetValue(flyMeter);
                 }
+
                 anim.SetBool("Flying", true);
+
                 CC.Move((Fly() + DefaultMovement()) * Time.deltaTime);
                 break;
 
@@ -164,6 +178,7 @@ public class PlayerController : MonoBehaviour
                 break;
 
             case PlayerState.Falling:
+                aimLine.enabled = false;
                 justJumped = false;
                 anim.SetBool("Grounded", false);
                 anim.SetBool("Flying", false);
@@ -172,15 +187,15 @@ public class PlayerController : MonoBehaviour
         }
 
     }
-    //TODO: Implement Damage and Death states and logic
-    private void OnDrawGizmosSelected()
+
+    //Draw SphereCast Sphere
+    /*private void OnDrawGizmosSelected()
     {
         Gizmos.DrawSphere(new Vector3(transform.position.x, transform.position.y + castOffset, transform.position.z), castRadius);
-    }
+    }*/
 
     Vector3 Gravity() //Used to glue the player to the ground and control falling
     {
-        //TODO: Damage/Death
         if (isGrounded)
         {
             if (!sliding)
@@ -188,7 +203,6 @@ public class PlayerController : MonoBehaviour
                 if (currentState == PlayerState.Falling)
                 {
                     gravVector = Vector3.zero;
-                    tempGravVector = Vector3.zero;
                     desMoveDir = Vector3.zero;
                     tempMoveSpeed = 0;
                     currentState = PlayerState.Default;
@@ -199,13 +213,6 @@ public class PlayerController : MonoBehaviour
             }
             else
             {
-                /*gravVector.y = -200f * currentAngle / 90;
-                gravVector.x += (1f - hit.normal.y) * hit.normal.x * slideFriction * (90 / currentAngle) * Time.deltaTime;
-                gravVector.z += (1f - hit.normal.y) * hit.normal.z * slideFriction * (90 / currentAngle) * Time.deltaTime;*/
-                /*if (gravVector.y > -maxGravity * currentAngle / 90)
-                {
-                    gravVector.y -= currentAngle / 90 * accGravity * Time.deltaTime;
-                }*/
                 currentState = PlayerState.Falling;
                 Vector3 c = Vector3.Cross(hit.normal, Vector3.up);
                 gravVector = -Vector3.Cross(c, hit.normal).normalized * slideFriction * Mathf.Pow(Mathf.Sin(Mathf.Deg2Rad * currentAngle), 4);
@@ -229,7 +236,6 @@ public class PlayerController : MonoBehaviour
             currentState = PlayerState.Falling;
             gravVector = new Vector3(0, gravity, 0);
         }
-        //tempGravVector = Vector3.Slerp(tempGravVector, gravVector, gravitySmooth * Time.deltaTime);
         return gravVector;
     }
 
@@ -246,14 +252,15 @@ public class PlayerController : MonoBehaviour
             right.Normalize();
             forward.Normalize();
 
+            //Rotate towards movement input
             desLookDir = forward * InputZ + right * InputX;
             if (currentState == PlayerState.Flying)
             {
-                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(desLookDir), flyRotationSpeed * Time.deltaTime); //Rotate towards movement input
+                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(desLookDir), flyRotationSpeed * Time.deltaTime);
             }
             else
             {
-                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(desLookDir), rotationSpeed * Time.deltaTime); //Rotate towards movement input
+                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(desLookDir), rotationSpeed * Time.deltaTime);
             }
 
             //Choose movement speed based on PlayerState and sprint button
@@ -280,6 +287,7 @@ public class PlayerController : MonoBehaviour
             {
                 tempMoveSpeed = Mathf.Lerp(tempMoveSpeed, jumpMoveSpeed, moveSmooth * Time.deltaTime);
             }
+
             desMoveDir = transform.forward.normalized * tempMoveSpeed;
             desMoveDir.y = 0;
             return desMoveDir;
@@ -294,14 +302,17 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    void AimMovement()
+    Vector3 AimMovement() //Movement while aiming
     {
+        //Get mouse input;
         float lookX = Input.GetAxis("Mouse X");
         float lookY = Input.GetAxis("Mouse Y");
+        //Rotate around Y axis
         transform.Rotate(Vector3.up, lookX * Time.deltaTime * rotationSpeed);
-
+        //Move AimPoint up and down
         aimPoint.Translate(Vector3.up * lookY * Time.deltaTime, Space.World);
 
+        //Aiming movement
         Speed = new Vector2(InputX, InputZ).sqrMagnitude;
         if (Speed > allowRotation)
         {
@@ -312,38 +323,36 @@ public class PlayerController : MonoBehaviour
             right.Normalize();
             forward.Normalize();
             desMoveDir = forward * InputZ + right * InputX;
-            desMoveDir = desMoveDir.normalized * Time.deltaTime * moveSpeed;
-            CC.Move(desMoveDir);
+            desMoveDir = desMoveDir.normalized * moveSpeed;
         }
         else
         {
             desMoveDir = Vector3.zero;
         }
-        anim.SetFloat("InputX", InputX);
-        anim.SetFloat("InputY", InputZ);
+        return desMoveDir;
     }
 
-    Vector3 Jump()
+    Vector3 Jump() //Jumping movement and exit conditions
     {
         anim.SetBool("Grounded", false);
-        if (!justJumped)
+        if (!justJumped) //Set initial jump velocity
         {
             jumpVelocity = maxJumpVelocity;
             justJumped = true;
         }
         else
         {
-            if (isGrounded)
+            if (isGrounded) //Get out of jump state if collided
             {
                 currentState = PlayerState.Falling;
             }
-            if (Input.GetKeyDown(KeyCode.Space))
+            if (Input.GetKeyDown(KeyCode.Space)) //Fly after jump if space is pressed
             {
                 flyNext = true;
             }
-            if (jumpVelocity < 0)
+            if (jumpVelocity < 0) //If at peak of jump
             {
-                if (flyNext)
+                if (flyNext && !CC.isGrounded && flyMeter > 0)
                 {
                     currentState = PlayerState.Flying;
                     gravity = -1;
@@ -355,7 +364,7 @@ public class PlayerController : MonoBehaviour
                 justJumped = false;
                 flyNext = false;
             }
-            else
+            else //Decrease velocity
             {
                 jumpVelocity -= jumpVelocityAcc * Time.deltaTime;
             }
@@ -365,7 +374,7 @@ public class PlayerController : MonoBehaviour
 
     Vector3 Fly()
     {
-        if (CC.isGrounded)
+        if (CC.isGrounded) //Reset and exit if hit something
         {
             currentState = PlayerState.Default;
             anim.SetBool("Grounded", true);
