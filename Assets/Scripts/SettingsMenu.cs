@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.UI;
+using System.Linq;
 
 public class SettingsMenu : MonoBehaviour
 {
@@ -11,6 +12,16 @@ public class SettingsMenu : MonoBehaviour
     public TMPro.TMP_Dropdown resolutionsDropdown;
 
     Resolution[] resolutions;
+
+    private string[] exclusions =
+    {
+        "832x624",
+        "1152x872",
+        "1680x1050",
+        "1280x800",
+        "1280x960"
+    };
+
     void Start ()
     {
         resolutions = Screen.resolutions;
@@ -23,8 +34,12 @@ public class SettingsMenu : MonoBehaviour
         for (int i = 0; i < resolutions.Length; i++)
         {
             string option = resolutions[i].width + "x" + resolutions[i].height;
-            options.Add(option);
+            if (exclusions.Contains(option) == false)
+            {
+                options.Add(option);
+            }
             
+
             if (resolutions[i].width == Screen.currentResolution.width &&
                 resolutions[i].height == Screen.currentResolution.height)
             {
