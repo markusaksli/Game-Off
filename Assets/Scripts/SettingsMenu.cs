@@ -31,6 +31,12 @@ public class SettingsMenu : MonoBehaviour
 
         int currentResolutionIndex = 0;
 
+
+        // Gets all the possible resolutions and puts them
+        // into a TMP_dropdown list.
+        // Also sets your current resolution as the dropdown's
+        // default value.
+
         for (int i = 0; i < resolutions.Length; i++)
         {
             string option = resolutions[i].width + "x" + resolutions[i].height;
@@ -52,6 +58,7 @@ public class SettingsMenu : MonoBehaviour
 
     }
 
+    // Changes resolution depending on the choice in a dropdown.
     public void SetResolution (int resolutionIndex)
     {
         Resolution resolution = resolutions[resolutionIndex];
@@ -61,15 +68,20 @@ public class SettingsMenu : MonoBehaviour
     
 
     
+    // Changes volume based given value.
+    // Here I'm changing examplemixer's master volume.
     public void SetVolume (float volume)
     {
         audioMixer.SetFloat("MasterVolume", volume);
     }
 
+    // Changes game quality settings based on the choice in a dropdown.
     public void SetQuality (int qualityIndex)
     {
         QualitySettings.SetQualityLevel(qualityIndex);
     }
+
+    // Changes to windowed or fullscreen.
     public void SetFullscreen (bool IsFullscreen)
     {
         Screen.fullScreen = IsFullscreen;

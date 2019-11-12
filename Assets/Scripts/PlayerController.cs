@@ -91,12 +91,13 @@ public class PlayerController : MonoBehaviour
     {
         //Start aiming if right mouse and in default state
         if (currentState == PlayerState.Default)
-        {
+        {  
             if (Input.GetMouseButton(1))
             {
                 anim.SetBool("Aiming", true);
                 currentState = PlayerState.Aiming;
-            }
+            }           
+
         }
         //Jump and Fly
         if (Input.GetKeyDown(KeyCode.Space))

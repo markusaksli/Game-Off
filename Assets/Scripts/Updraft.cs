@@ -31,6 +31,7 @@ public class Updraft : MonoBehaviour
         if (other.tag == "Player")
         {
             UpdraftActive = true;
+            
         }
     }
 
