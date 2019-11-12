@@ -4,7 +4,7 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     //References
-    private float InputX, InputZ, Speed, jumpVelocity, tempSpeed, tempMoveSpeed;
+    private float InputX, InputZ, Speed, jumpVelocity, tempMoveSpeed;
     private CharacterController CC;
     private Camera cam;
     private Animator anim;
@@ -80,7 +80,7 @@ public class PlayerController : MonoBehaviour
     {
         if (isGrounded)
         {
-            Physics.SphereCast(new Vector3(transform.position.x, transform.position.y + castOffset, transform.position.z), castRadius, Vector3.down, out hit, 0.55f);
+            Physics.SphereCast(new Vector3(transform.position.x, transform.position.y + castOffset, transform.position.z), castRadius, Vector3.down, out hit, 0.8f);
             currentAngle = Vector3.Angle(transform.up, hit.normal);
             sliding = (currentAngle > CC.slopeLimit);
         }
@@ -91,12 +91,12 @@ public class PlayerController : MonoBehaviour
     {
         //Start aiming if right mouse and in default state
         if (currentState == PlayerState.Default)
-        {  
+        {
             if (Input.GetMouseButton(1))
             {
                 anim.SetBool("Aiming", true);
                 currentState = PlayerState.Aiming;
-            }           
+            }
 
         }
         //Jump and Fly
@@ -190,10 +190,10 @@ public class PlayerController : MonoBehaviour
     }
 
     //Draw SphereCast Sphere
-    /*private void OnDrawGizmosSelected()
+    private void OnDrawGizmosSelected()
     {
         Gizmos.DrawSphere(new Vector3(transform.position.x, transform.position.y + castOffset, transform.position.z), castRadius);
-    }*/
+    }
 
     Vector3 Gravity() //Used to glue the player to the ground and control falling
     {
@@ -226,9 +226,9 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            if (gravity > 0)
+            if (gravity == 10)
             {
-                gravity = -1;
+                gravity = 0;
             }
             if (gravity > -maxGravity)
             {
@@ -270,14 +270,10 @@ public class PlayerController : MonoBehaviour
                 if (Input.GetKey(KeyCode.LeftShift))
                 {
                     tempMoveSpeed = Mathf.Lerp(tempMoveSpeed, sprintSpeed, moveSmooth * Time.deltaTime);
-                    tempSpeed = Mathf.Lerp(tempSpeed, Speed, moveSmooth / 15 * Time.deltaTime);
-                    anim.SetFloat("InputMagnitude", tempSpeed);
                 }
                 else
                 {
                     tempMoveSpeed = Mathf.Lerp(tempMoveSpeed, moveSpeed, moveSmooth * Time.deltaTime);
-                    tempSpeed = Mathf.Lerp(tempSpeed, Speed / 1.5f, moveSmooth / 15 * Time.deltaTime);
-                    anim.SetFloat("InputMagnitude", tempSpeed);
                 }
             }
             else if (currentState == PlayerState.Flying)
@@ -288,17 +284,17 @@ public class PlayerController : MonoBehaviour
             {
                 tempMoveSpeed = Mathf.Lerp(tempMoveSpeed, jumpMoveSpeed, moveSmooth * Time.deltaTime);
             }
-
+            anim.SetFloat("InputMagnitude", tempMoveSpeed / sprintSpeed);
             desMoveDir = transform.forward.normalized * tempMoveSpeed;
             desMoveDir.y = 0;
             return desMoveDir;
         }
         else //If input is below threshold, zero movement
         {
-            tempMoveSpeed = 0;
-            desMoveDir = Vector3.Slerp(desMoveDir, Vector3.zero, stopSmooth * Time.deltaTime);
-            tempSpeed = Mathf.Lerp(tempSpeed, Speed, stopSmooth * Time.deltaTime);
-            anim.SetFloat("InputMagnitude", tempSpeed);
+            tempMoveSpeed = Mathf.Lerp(tempMoveSpeed, 0f, stopSmooth * Time.deltaTime);
+            anim.SetFloat("InputMagnitude", tempMoveSpeed / sprintSpeed);
+            desMoveDir = transform.forward.normalized * tempMoveSpeed;
+            desMoveDir.y = 0;
             return desMoveDir;
         }
     }
