@@ -22,6 +22,9 @@ public class PlayerController : MonoBehaviour
     public bool isGrounded;
     public PlayerState currentState;
     public enum PlayerState { Default, Aiming, Flying, Falling, Jumping };
+    public bool enableMovement;
+    public bool enableGravity;
+    public bool death;
     [Space(20)]
 
     [Header("Gravity:")]
@@ -89,6 +92,10 @@ public class PlayerController : MonoBehaviour
     //Get input for state changes and execute state logic
     void InputDecider()
     {
+        if (!enableMovement)
+        {
+            return;
+        }
         //Start aiming if right mouse and in default state
         if (currentState == PlayerState.Default)
         {
@@ -386,5 +393,4 @@ public class PlayerController : MonoBehaviour
 
         return new Vector3(0, gravity, 0);
     }
-
 }

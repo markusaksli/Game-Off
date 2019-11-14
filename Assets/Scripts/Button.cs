@@ -1,12 +1,13 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class Button : MonoBehaviour
 {
     // Press F to open UI Panel element
     public GameObject instructions;
-
+    private void Start()
+    {
+        instructions.SetActive(false);
+    }
     // Check if the Player is in the button's collider
     private void OnTriggerStay(Collider other)
     {
@@ -18,7 +19,7 @@ public class Button : MonoBehaviour
             {
                 animator.SetTrigger("DoorOpenClose");
             }
-        }   
+        }
     }
 
     //If the Player exits the button's range stop showing instructions
