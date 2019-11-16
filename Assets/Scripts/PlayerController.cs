@@ -315,7 +315,7 @@ public class PlayerController : MonoBehaviour
         {
             tempMoveSpeed = Mathf.Lerp(tempMoveSpeed, 0f, stopSmooth * Time.deltaTime);
             anim.SetFloat("InputMagnitude", tempMoveSpeed / sprintSpeed);
-            if ((tempMoveSpeed / sprintSpeed) < 0.001f)
+            if ((tempMoveSpeed / sprintSpeed) < 0.01f)
             {
                 anim.SetFloat("InputMagnitude", 0);
             }

@@ -4,6 +4,7 @@ public class Button : MonoBehaviour
 {
     // Press F to open UI Panel element
     public GameObject instructions;
+    public Animator animator;
     private void Start()
     {
         instructions.SetActive(false);
@@ -14,7 +15,6 @@ public class Button : MonoBehaviour
         if (other.tag == "Player")
         {
             instructions.SetActive(true);
-            Animator animator = GetComponentInChildren<Animator>();
             if (Input.GetKeyDown(KeyCode.F))
             {
                 animator.SetTrigger("DoorOpenClose");
