@@ -14,8 +14,10 @@ public class PlayerController : MonoBehaviour
     private bool flyNext = false;
     RaycastHit hit;
     Progressor flyBar;
+    PlayerSounds PS;
 
     [Header("Player Info:")]
+    public string groundTag;
     public float flyMeter;
     public float currentAngle;
     public bool sliding;
@@ -60,6 +62,7 @@ public class PlayerController : MonoBehaviour
     {
         cam = Camera.main;
         CC = GetComponent<CharacterController>();
+        PS = GetComponent<PlayerSounds>();
         anim = GetComponent<Animator>();
         flyBar = GetComponent<Progressor>();
 
@@ -86,6 +89,7 @@ public class PlayerController : MonoBehaviour
             Physics.SphereCast(new Vector3(transform.position.x, transform.position.y + castOffset, transform.position.z), castRadius, Vector3.down, out hit, 0.8f);
             currentAngle = Vector3.Angle(transform.up, hit.normal);
             sliding = (currentAngle > CC.slopeLimit);
+            groundTag = hit.transform.tag;
         }
     }
 
@@ -300,6 +304,14 @@ public class PlayerController : MonoBehaviour
         {
             tempMoveSpeed = Mathf.Lerp(tempMoveSpeed, 0f, stopSmooth * Time.deltaTime);
             anim.SetFloat("InputMagnitude", tempMoveSpeed / sprintSpeed);
+            if ((tempMoveSpeed / sprintSpeed) > 0.001f)
+            {
+                anim.SetFloat("InputMagnitude", 0);
+            }
+            else
+            {
+                anim.SetFloat("InputMagnitude", tempMoveSpeed / sprintSpeed);
+            }
             desMoveDir = transform.forward.normalized * tempMoveSpeed;
             desMoveDir.y = 0;
             return desMoveDir;
