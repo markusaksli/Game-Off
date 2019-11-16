@@ -89,7 +89,10 @@ public class PlayerController : MonoBehaviour
             Physics.SphereCast(new Vector3(transform.position.x, transform.position.y + castOffset, transform.position.z), castRadius, Vector3.down, out hit, 0.8f);
             currentAngle = Vector3.Angle(transform.up, hit.normal);
             sliding = (currentAngle > CC.slopeLimit);
-            groundTag = hit.transform.tag;
+            if (hit.collider != null && hit.collider.gameObject != null)
+            {
+                groundTag = hit.transform.tag;
+            }
         }
     }
 
@@ -187,6 +190,14 @@ public class PlayerController : MonoBehaviour
 
             case PlayerState.Jumping:
                 CC.Move((Jump() + DefaultMovement()) * Time.deltaTime);
+                RaycastHit jumpHit;
+                Physics.SphereCast(new Vector3(transform.position.x, transform.position.y + castOffset, transform.position.z), castRadius, Vector3.up, out jumpHit, 0.04f);
+
+                if (jumpHit.normal.y < 0)
+                {
+                    Debug.Log("Jump end");
+                    currentState = PlayerState.Falling;
+                }
                 break;
 
             case PlayerState.Falling:
@@ -304,7 +315,7 @@ public class PlayerController : MonoBehaviour
         {
             tempMoveSpeed = Mathf.Lerp(tempMoveSpeed, 0f, stopSmooth * Time.deltaTime);
             anim.SetFloat("InputMagnitude", tempMoveSpeed / sprintSpeed);
-            if ((tempMoveSpeed / sprintSpeed) > 0.001f)
+            if ((tempMoveSpeed / sprintSpeed) < 0.001f)
             {
                 anim.SetFloat("InputMagnitude", 0);
             }
