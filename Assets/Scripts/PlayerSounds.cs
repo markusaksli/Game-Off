@@ -63,7 +63,6 @@ public class PlayerSounds : MonoBehaviour
                 break;
 
             default:
-                Debug.Log("No ground tag");
                 break;
         }
     }

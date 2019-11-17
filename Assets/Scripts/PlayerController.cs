@@ -195,7 +195,6 @@ public class PlayerController : MonoBehaviour
 
                 if (jumpHit.normal.y < 0)
                 {
-                    Debug.Log("Jump end");
                     currentState = PlayerState.Falling;
                 }
                 break;
@@ -238,7 +237,13 @@ public class PlayerController : MonoBehaviour
             {
                 currentState = PlayerState.Falling;
                 Vector3 c = Vector3.Cross(hit.normal, Vector3.up);
-                gravVector = -Vector3.Cross(c, hit.normal).normalized * slideFriction * Mathf.Pow(Mathf.Sin(Mathf.Deg2Rad * currentAngle), 4);
+                //gravVector = -Vector3.Cross(c, hit.normal).normalized * slideFriction * Mathf.Pow(Mathf.Sin(Mathf.Deg2Rad * currentAngle), 4);
+                gravVector = -Vector3.Cross(c, hit.normal).normalized * slideFriction;
+                if (currentAngle > 83f)
+                {
+                    gravVector.x *= 10f;
+                    gravVector.z *= 10f;
+                }
                 if (gravVector.y < -maxGravity)
                 {
                     gravVector.y = -maxGravity;
