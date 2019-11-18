@@ -17,7 +17,7 @@ public class TimeTrial : MonoBehaviour
     // if he fails or succeeds.
     public void OnTriggerStay(Collider other)
     {
-        if (other.tag == "Player")
+        if (other.tag == "Player" && TrialCheckpoint.Completed == false)
         {
             instructions.SetActive(true);
             if (Input.GetKeyDown(KeyCode.F))
@@ -47,7 +47,7 @@ public class TimeTrial : MonoBehaviour
 
         if (StartTrial == true)
         {          
-            time.fillAmount -= Time.deltaTime / 30.0f;
+            time.fillAmount -= Time.deltaTime / 10.0f;
         }
 
         if (time.fillAmount <= 0.0f)
@@ -56,12 +56,15 @@ public class TimeTrial : MonoBehaviour
             player.gameObject.SetActive(false);
             player.transform.position = TimeTrial.startPos;
             player.gameObject.SetActive(true);
-
+           
+           
             StartTrial = false;
             time.fillAmount = 1.0f;
             timer.SetActive(false);
         }
     }
+
+    
 
 
 }

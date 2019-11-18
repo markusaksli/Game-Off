@@ -10,7 +10,7 @@ public class TrialCheckpoint : MonoBehaviour
     public GameObject timer;
     private Image time;
     private GameObject player;
-    private bool Completed = false;
+    public static bool Completed = false;
 
     // Check if the player has entered the exit or just a checkpoint.
     // Give them extra time if it's a checkpoint.
@@ -44,6 +44,17 @@ public class TrialCheckpoint : MonoBehaviour
         
     }
 
+    //Reset checkpoints if player fails the trial
+    public void Update()
+    {
+        time = timer.GetComponent<Image>();
+        if (time.fillAmount < 0.01f)
+        {
+            HasPassed = false;
+        }
+    }
+
+
     // Make sure the the player couldn't get extra time from  one checkpoint
     // more than once.
     public void OnTriggerExit(Collider other)
@@ -54,4 +65,6 @@ public class TrialCheckpoint : MonoBehaviour
 
         }
     }
+
+    
 }
