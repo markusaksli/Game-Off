@@ -14,8 +14,10 @@ public class PlayerController : MonoBehaviour
     private bool flyNext = false;
     RaycastHit hit;
     Progressor flyBar;
+    PlayerSounds PS;
 
     [Header("Player Info:")]
+    public string groundTag;
     public float flyMeter;
     public float currentAngle;
     public bool sliding;
@@ -60,6 +62,7 @@ public class PlayerController : MonoBehaviour
     {
         cam = Camera.main;
         CC = GetComponent<CharacterController>();
+        PS = GetComponent<PlayerSounds>();
         anim = GetComponent<Animator>();
         flyBar = GetComponent<Progressor>();
 
@@ -86,6 +89,10 @@ public class PlayerController : MonoBehaviour
             Physics.SphereCast(new Vector3(transform.position.x, transform.position.y + castOffset, transform.position.z), castRadius, Vector3.down, out hit, 0.8f);
             currentAngle = Vector3.Angle(transform.up, hit.normal);
             sliding = (currentAngle > CC.slopeLimit);
+            if (hit.collider != null && hit.collider.gameObject != null)
+            {
+                groundTag = hit.transform.tag;
+            }
         }
     }
 
@@ -183,6 +190,13 @@ public class PlayerController : MonoBehaviour
 
             case PlayerState.Jumping:
                 CC.Move((Jump() + DefaultMovement()) * Time.deltaTime);
+                RaycastHit jumpHit;
+                Physics.SphereCast(new Vector3(transform.position.x, transform.position.y + castOffset, transform.position.z), castRadius, Vector3.up, out jumpHit, 0.04f);
+
+                if (jumpHit.normal.y < 0)
+                {
+                    currentState = PlayerState.Falling;
+                }
                 break;
 
             case PlayerState.Falling:
@@ -223,7 +237,13 @@ public class PlayerController : MonoBehaviour
             {
                 currentState = PlayerState.Falling;
                 Vector3 c = Vector3.Cross(hit.normal, Vector3.up);
-                gravVector = -Vector3.Cross(c, hit.normal).normalized * slideFriction * Mathf.Pow(Mathf.Sin(Mathf.Deg2Rad * currentAngle), 4);
+                //gravVector = -Vector3.Cross(c, hit.normal).normalized * slideFriction * Mathf.Pow(Mathf.Sin(Mathf.Deg2Rad * currentAngle), 4);
+                gravVector = -Vector3.Cross(c, hit.normal).normalized * slideFriction;
+                if (currentAngle > 83f)
+                {
+                    gravVector.x *= 10f;
+                    gravVector.z *= 10f;
+                }
                 if (gravVector.y < -maxGravity)
                 {
                     gravVector.y = -maxGravity;
@@ -300,6 +320,14 @@ public class PlayerController : MonoBehaviour
         {
             tempMoveSpeed = Mathf.Lerp(tempMoveSpeed, 0f, stopSmooth * Time.deltaTime);
             anim.SetFloat("InputMagnitude", tempMoveSpeed / sprintSpeed);
+            if ((tempMoveSpeed / sprintSpeed) < 0.01f)
+            {
+                anim.SetFloat("InputMagnitude", 0);
+            }
+            else
+            {
+                anim.SetFloat("InputMagnitude", tempMoveSpeed / sprintSpeed);
+            }
             desMoveDir = transform.forward.normalized * tempMoveSpeed;
             desMoveDir.y = 0;
             return desMoveDir;

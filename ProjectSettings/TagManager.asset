@@ -6,7 +6,8 @@ TagManager:
   tags:
   - GunEnd
   - Enemy
-  - TrialExit
+  - Earth
+  - Wood
   layers:
   - Default
   - TransparentFX
