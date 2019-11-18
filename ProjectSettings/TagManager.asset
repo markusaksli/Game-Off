@@ -6,6 +6,7 @@ TagManager:
   tags:
   - GunEnd
   - Enemy
+  - TrialExit
   layers:
   - Default
   - TransparentFX

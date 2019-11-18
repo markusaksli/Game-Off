@@ -4,12 +4,25 @@ public class Button : MonoBehaviour
 {
     // Press F to open UI Panel element
     public GameObject instructions;
-    private void Start()
-    {
-        instructions.SetActive(false);
-    }
+    
     // Check if the Player is in the button's collider
-    private void OnTriggerStay(Collider other)
+    public void OnTriggerStay(Collider other)
+    {
+        Interact(other);
+    }
+
+    //If the Player exits the button's range stop showing instructions
+    public void OnTriggerExit(Collider other)
+    {
+        if (other.tag == "Player")
+        {
+            instructions.SetActive(false);
+        }
+    }
+    
+    //Made this function virtual so other doors could inherit
+    //the same behaviour.
+    public virtual void Interact(Collider other)
     {
         if (other.tag == "Player")
         {
@@ -22,12 +35,5 @@ public class Button : MonoBehaviour
         }
     }
 
-    //If the Player exits the button's range stop showing instructions
-    private void OnTriggerExit(Collider other)
-    {
-        if (other.tag == "Player")
-        {
-            instructions.SetActive(false);
-        }
-    }
+    
 }
