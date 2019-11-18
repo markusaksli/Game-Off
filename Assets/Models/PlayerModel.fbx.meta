@@ -102,7 +102,15 @@ ModelImporter:
       mirror: 0
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
       curves: []
-      events: []
+      events:
+      - time: 0
+        functionName: PlayJump
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: dc0778cc953679a4d9cc8e1c2831b9a6,
+          type: 3}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
       transformMask: []
       maskType: 3
       maskSource: {instanceID: 0}
@@ -160,7 +168,15 @@ ModelImporter:
       mirror: 0
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
       curves: []
-      events: []
+      events:
+      - time: 0
+        functionName: PlayerLand
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: dc0778cc953679a4d9cc8e1c2831b9a6,
+          type: 3}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
       transformMask: []
       maskType: 3
       maskSource: {instanceID: 0}
@@ -188,24 +204,60 @@ ModelImporter:
       heightFromFeet: 0
       mirror: 0
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
-      curves: []
-      events:
-      - time: 0.15189873
-        functionName: PlayerStep
-        data: 
-        objectReferenceParameter: {fileID: 11500000, guid: dc0778cc953679a4d9cc8e1c2831b9a6,
-          type: 3}
-        floatParameter: 0
-        intParameter: 0
-        messageOptions: 0
-      - time: 0.6111254
-        functionName: PlayerStep
-        data: 
-        objectReferenceParameter: {fileID: 11500000, guid: dc0778cc953679a4d9cc8e1c2831b9a6,
-          type: 3}
-        floatParameter: 0
-        intParameter: 0
-        messageOptions: 0
+      curves:
+      - name: FootstepCurve
+        curve:
+          serializedVersion: 2
+          curve:
+          - serializedVersion: 3
+            time: 0
+            value: -1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 0.12388607
+            value: 0
+            inSlope: 7.0007777
+            outSlope: 7.0007777
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0.054354124
+          - serializedVersion: 3
+            time: 0.50050664
+            value: 1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 0.58934635
+            value: 0
+            inSlope: -6.780105
+            outSlope: -6.780105
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0.23263735
+            outWeight: 0
+          - serializedVersion: 3
+            time: 1
+            value: -1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          preInfinity: 3
+          postInfinity: 3
+          rotationOrder: 4
+      events: []
       transformMask: []
       maskType: 3
       maskSource: {instanceID: 0}
@@ -233,24 +285,60 @@ ModelImporter:
       heightFromFeet: 0
       mirror: 0
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
-      curves: []
-      events:
-      - time: 0.08092404
-        functionName: PlayerStep
-        data: 
-        objectReferenceParameter: {fileID: 11500000, guid: dc0778cc953679a4d9cc8e1c2831b9a6,
-          type: 3}
-        floatParameter: 0
-        intParameter: 0
-        messageOptions: 0
-      - time: 0.62687254
-        functionName: PlayerStep
-        data: 
-        objectReferenceParameter: {fileID: 11500000, guid: dc0778cc953679a4d9cc8e1c2831b9a6,
-          type: 3}
-        floatParameter: 0
-        intParameter: 0
-        messageOptions: 0
+      curves:
+      - name: FootstepCurve
+        curve:
+          serializedVersion: 2
+          curve:
+          - serializedVersion: 3
+            time: 0
+            value: -1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 0.15748523
+            value: 0
+            inSlope: 5.721347
+            outSlope: 5.721347
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0.07047766
+          - serializedVersion: 3
+            time: 0.505
+            value: 1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 0.63206124
+            value: 0
+            inSlope: -7.183173
+            outSlope: -7.183173
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0.23029515
+            outWeight: 0
+          - serializedVersion: 3
+            time: 1
+            value: -1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          preInfinity: 3
+          postInfinity: 3
+          rotationOrder: 4
+      events: []
       transformMask: []
       maskType: 3
       maskSource: {instanceID: 0}
