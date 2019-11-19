@@ -58,6 +58,10 @@ public class PlayerController : MonoBehaviour
 
     public Transform aimPoint;
     public LineRenderer aimLine;
+
+   
+    private Vector3 respawnPoint;  //Created a vector3 here for future use when creating respawn
+
     void Start()
     {
         cam = Camera.main;
@@ -421,4 +425,13 @@ public class PlayerController : MonoBehaviour
 
         return new Vector3(0, gravity, 0);
     }
+
+    //Need to create respawnPoint vector3 where according to checkpoint
+    //a newPosition is created. When that is added, checkpoints will work.
+    public void SetSpawnPoint(Vector3 newPosition)
+    {
+        respawnPoint = newPosition;
+    }
 }
+
+

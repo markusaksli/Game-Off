@@ -8,6 +8,7 @@ public class Checkpoint : MonoBehaviour
 
     public Renderer theRend;
 
+    //Materials to tell the difference which one is active.
     public Material cpOff;
     public Material cpOn;
 
@@ -21,6 +22,8 @@ public class Checkpoint : MonoBehaviour
     {
         
     }
+    //If enters checkpoint, all checkpoints will be switched off
+    //and current one will be made active
     public void CheckpointOn()
     {
         Checkpoint[] checkpoints = FindObjectsOfType<Checkpoint>();
