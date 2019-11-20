@@ -9,20 +9,26 @@ public class TrialCheckpoint : MonoBehaviour
     private bool HasPassed = false;
     public GameObject timer;
     private Image time;
-    private GameObject player;
     public static bool Completed = false;
+    public GameObject instructions;
 
     // Check if the player has entered the exit or just a checkpoint.
     // Give them extra time if it's a checkpoint.
     // To teleport the player you gotta set make it's gameobject inactive and
     // then back to active right after teleporting.
-    public void OnTriggerEnter(Collider other)
+    public void OnTriggerStay(Collider other)
     {
         time = timer.GetComponent<Image>();
 
         if (HasPassed == false && Completed == false)
-        {        
-            time.fillAmount += 0.2f;
+        {
+            instructions.SetActive(true);
+            if (Input.GetKeyDown(KeyCode.F))
+            {
+                
+                time.fillAmount += 0.2f;
+                HasPassed = true;
+            }        
         }
 
         if (gameObject.tag == "TrialExit")
@@ -60,9 +66,8 @@ public class TrialCheckpoint : MonoBehaviour
     public void OnTriggerExit(Collider other)
     {
         if (other.tag == "Player")
-        {
-            HasPassed = true;
-
+        {           
+            instructions.SetActive(false);
         }
     }
 
