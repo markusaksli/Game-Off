@@ -1,8 +1,23 @@
 fileFormatVersion: 2
-guid: 8f310b3270c2ccd449497c78c6b9298c
+guid: fabb48def58d1a44e9e347dce51fe5eb
 ModelImporter:
   serializedVersion: 26
   internalIDToNameTable:
+  - first:
+      74: -2303704328876246397
+    second: Rig|Glide_End
+  - first:
+      74: 6433402965859829591
+    second: Rig|Glide_Idle
+  - first:
+      74: 7088370511400579750
+    second: Rig|Glide_Start
+  - first:
+      74: 3264403759065357677
+    second: Rig|Glide_Turn_Left
+  - first:
+      74: -3473469351326174897
+    second: Rig|Glide_Turn_Right
   - first:
       74: -429512112410174799
     second: Rig|Idle
@@ -49,6 +64,151 @@ ModelImporter:
     extraExposedTransformPaths: []
     extraUserProperties: []
     clipAnimations:
+    - serializedVersion: 16
+      name: Rig|Glide_End
+      takeName: Rig|Glide_End
+      internalID: 0
+      firstFrame: 0
+      lastFrame: 14
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Rig|Glide_Idle
+      takeName: Rig|Glide_Idle
+      internalID: 0
+      firstFrame: 0
+      lastFrame: 38
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Rig|Glide_Start
+      takeName: Rig|Glide_Start
+      internalID: 0
+      firstFrame: 0
+      lastFrame: 31
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Rig|Glide_Turn_Left
+      takeName: Rig|Glide_Turn_Left
+      internalID: 0
+      firstFrame: 0
+      lastFrame: 38
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Rig|Glide_Turn_Right
+      takeName: Rig|Glide_Turn_Right
+      internalID: 0
+      firstFrame: 0
+      lastFrame: 38
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
     - serializedVersion: 16
       name: Rig|Idle
       takeName: Rig|Idle
@@ -149,7 +309,7 @@ ModelImporter:
       takeName: Rig|Jump_Land
       internalID: 0
       firstFrame: 0
-      lastFrame: 9
+      lastFrame: 14
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -219,31 +379,13 @@ ModelImporter:
             inWeight: 0
             outWeight: 0
           - serializedVersion: 3
-            time: 0.12388607
-            value: 0
-            inSlope: 7.0007777
-            outSlope: 7.0007777
-            tangentMode: 0
-            weightedMode: 0
-            inWeight: 0
-            outWeight: 0.054354124
-          - serializedVersion: 3
-            time: 0.50050664
+            time: 0.50093603
             value: 1
             inSlope: 0
             outSlope: 0
             tangentMode: 0
             weightedMode: 0
             inWeight: 0
-            outWeight: 0
-          - serializedVersion: 3
-            time: 0.58934635
-            value: 0
-            inSlope: -6.780105
-            outSlope: -6.780105
-            tangentMode: 0
-            weightedMode: 0
-            inWeight: 0.23263735
             outWeight: 0
           - serializedVersion: 3
             time: 1
@@ -300,31 +442,13 @@ ModelImporter:
             inWeight: 0
             outWeight: 0
           - serializedVersion: 3
-            time: 0.15748523
-            value: 0
-            inSlope: 5.721347
-            outSlope: 5.721347
-            tangentMode: 0
-            weightedMode: 0
-            inWeight: 0
-            outWeight: 0.07047766
-          - serializedVersion: 3
-            time: 0.505
+            time: 0.5005983
             value: 1
             inSlope: 0
             outSlope: 0
             tangentMode: 0
             weightedMode: 0
             inWeight: 0
-            outWeight: 0
-          - serializedVersion: 3
-            time: 0.63206124
-            value: 0
-            inSlope: -7.183173
-            outSlope: -7.183173
-            tangentMode: 0
-            weightedMode: 0
-            inWeight: 0.23029515
             outWeight: 0
           - serializedVersion: 3
             time: 1

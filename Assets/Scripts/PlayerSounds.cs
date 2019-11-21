@@ -7,11 +7,15 @@ public class PlayerSounds : MonoBehaviour
     [Range(0f, 1f)] public float footstepVolume;
     [Range(0f, 1f)] public float jumpVolume;
     [Range(0f, 1f)] public float landVolume;
+    [Range(0f, 1f)] public float flyVolume;
+    public float flySmooth;
     public AudioMixerGroup output;
+    public AudioClip flyClip;
     public AudioClip[] jumpSounds;
     public AudioClip[] earthSounds;
     public AudioClip[] woodSounds;
     public List<AudioSource> sources;
+    public AudioSource flySource;
     private PlayerController PC;
     private Animator anim;
     int lastStep;
@@ -19,6 +23,7 @@ public class PlayerSounds : MonoBehaviour
     int lastLand;
     float lastCurve;
     float currentCurve;
+    bool flying;
 
     private void Update()
     {
@@ -28,12 +33,30 @@ public class PlayerSounds : MonoBehaviour
             PlayerStep();
         }
         lastCurve = currentCurve;
+
+        if (anim.GetBool("Flying"))
+        {
+            flySource.volume = Mathf.Lerp(flySource.volume, flyVolume, flySmooth * Time.deltaTime);
+        }
+        else
+        {
+            flySource.volume = Mathf.Lerp(flySource.volume, 0f, flySmooth * Time.deltaTime);
+        }
     }
 
     private void Start()
     {
         PC = GetComponent<PlayerController>();
         anim = GetComponent<Animator>();
+        flySource = gameObject.AddComponent<AudioSource>();
+        flySource.clip = flyClip;
+        flySource.loop = true;
+        flySource.spatialBlend = 1f;
+        flySource.reverbZoneMix = 1f;
+        flySource.outputAudioMixerGroup = output;
+        flySource.volume = 0f;
+        flySource.Play();
+
         for (int i = 0; i < 4; i++)
         {
             AudioSource s = gameObject.AddComponent<AudioSource>();

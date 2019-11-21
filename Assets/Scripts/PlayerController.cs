@@ -4,7 +4,7 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     //References
-    private float InputX, InputZ, Speed, jumpVelocity, tempMoveSpeed;
+    private float InputX, InputZ, Speed, jumpVelocity, tempMoveSpeed, glideRotate;
     private CharacterController CC;
     private Camera cam;
     private Animator anim;
@@ -59,7 +59,7 @@ public class PlayerController : MonoBehaviour
     public Transform aimPoint;
     public LineRenderer aimLine;
 
-   
+
     private Vector3 respawnPoint;  //Created a vector3 here for future use when creating respawn
 
     void Start()
@@ -108,15 +108,15 @@ public class PlayerController : MonoBehaviour
             return;
         }
         //Start aiming if right mouse and in default state
-        if (currentState == PlayerState.Default)
-        {
-            if (Input.GetMouseButton(1))
-            {
-                anim.SetBool("Aiming", true);
-                currentState = PlayerState.Aiming;
-            }
+        /*        if (currentState == PlayerState.Default)
+                {
+                    if (Input.GetMouseButton(1))
+                    {
+                        anim.SetBool("Aiming", true);
+                        currentState = PlayerState.Aiming;
+                    }
 
-        }
+                }*/
         //Jump and Fly
         if (Input.GetKeyDown(KeyCode.Space))
         {
@@ -248,9 +248,9 @@ public class PlayerController : MonoBehaviour
                     gravVector.x *= 10f;
                     gravVector.z *= 10f;
                 }
-                if (gravVector.y < -maxGravity)
+                if (gravVector.y < -maxGravity * (currentAngle / 90f))
                 {
-                    gravVector.y = -maxGravity;
+                    gravVector.y = -maxGravity * (currentAngle / 90f);
                 }
                 return gravVector;
             }
@@ -288,12 +288,15 @@ public class PlayerController : MonoBehaviour
             desLookDir = forward * InputZ + right * InputX;
             if (currentState == PlayerState.Flying)
             {
+                glideRotate = Mathf.Lerp(glideRotate, InputX, flyRotationSpeed * 2 * Time.deltaTime);
                 transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(desLookDir), flyRotationSpeed * Time.deltaTime);
             }
             else
             {
+                glideRotate = 0;
                 transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(desLookDir), rotationSpeed * Time.deltaTime);
             }
+            anim.SetFloat("GlideRotate", glideRotate);
 
             //Choose movement speed based on PlayerState and sprint button
             if (currentState == PlayerState.Default)
@@ -322,6 +325,8 @@ public class PlayerController : MonoBehaviour
         }
         else //If input is below threshold, zero movement
         {
+            glideRotate = Mathf.Lerp(glideRotate, 0, flyRotationSpeed / 2 * Time.deltaTime);
+            anim.SetFloat("GlideRotate", glideRotate);
             tempMoveSpeed = Mathf.Lerp(tempMoveSpeed, 0f, stopSmooth * Time.deltaTime);
             anim.SetFloat("InputMagnitude", tempMoveSpeed / sprintSpeed);
             if ((tempMoveSpeed / sprintSpeed) < 0.01f)
@@ -433,5 +438,3 @@ public class PlayerController : MonoBehaviour
         respawnPoint = newPosition;
     }
 }
-
-
