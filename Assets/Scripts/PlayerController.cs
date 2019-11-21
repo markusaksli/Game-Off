@@ -1,5 +1,6 @@
 ﻿using Doozy.Engine.Progress;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
@@ -60,7 +61,7 @@ public class PlayerController : MonoBehaviour
     public LineRenderer aimLine;
 
 
-    private Vector3 respawnPoint;  //Created a vector3 here for future use when creating respawn
+    private Vector3 respawnPoint = new Vector3();  //Created a vector3 here for future use when creating respawn
 
     void Start()
     {
@@ -436,5 +437,16 @@ public class PlayerController : MonoBehaviour
     public void SetSpawnPoint(Vector3 newPosition)
     {
         respawnPoint = newPosition;
+    }
+
+    public void Respawn()
+    {
+        if (!respawnPoint.Equals(new Vector3()))
+        {
+            CC.enabled = false;
+            this.transform.position = respawnPoint;
+            CC.enabled = true;
+        }
+        else SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 }
