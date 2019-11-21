@@ -44,8 +44,8 @@ public class TimeTrial : MonoBehaviour
     void Update()
     {
         time = timer.GetComponent<Image>();
-
-        if (StartTrial == true)
+        
+        if (StartTrial == true && TrialCheckpoint.Completed == false)
         {          
             time.fillAmount -= Time.deltaTime / 10.0f;
         }
