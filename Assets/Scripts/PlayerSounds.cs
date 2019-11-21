@@ -8,9 +8,13 @@ public class PlayerSounds : MonoBehaviour
     [Range(0f, 1f)] public float jumpVolume;
     [Range(0f, 1f)] public float landVolume;
     [Range(0f, 1f)] public float flyVolume;
+    [Range(0f, 1f)] public float gliderEquipVolume;
+    [Range(0f, 1f)] public float gliderHolsterVolume;
     public float flySmooth;
     public AudioMixerGroup output;
     public AudioClip flyClip;
+    public AudioClip gliderEquipClip;
+    public AudioClip gliderHolsterClip;
     public AudioClip[] jumpSounds;
     public AudioClip[] earthSounds;
     public AudioClip[] woodSounds;
@@ -23,7 +27,6 @@ public class PlayerSounds : MonoBehaviour
     int lastLand;
     float lastCurve;
     float currentCurve;
-    bool flying;
 
     private void Update()
     {
@@ -115,6 +118,31 @@ public class PlayerSounds : MonoBehaviour
             }
         }
     }
+
+    void PlayGlider(int holster)
+    {
+        foreach (AudioSource sc in sources)
+        {
+            if (!sc.isPlaying)
+            {
+                if (holster == 1)
+                {
+                    sc.volume = gliderHolsterVolume;
+                    sc.clip = gliderHolsterClip;
+                    sc.Play();
+                    return;
+                }
+                else
+                {
+                    sc.volume = gliderEquipVolume;
+                    sc.clip = gliderEquipClip;
+                    sc.Play();
+                    return;
+                }
+            }
+        }
+    }
+
     void PlayLand(AudioClip[] sounds)
     {
         foreach (AudioSource sc in sources)
