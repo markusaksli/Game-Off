@@ -1,5 +1,8 @@
 ﻿using Doozy.Engine.Progress;
+using Doozy.Engine.UI;
+using System.Collections;
 using UnityEngine;
+using UnityEngine.Audio;
 using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
@@ -15,7 +18,9 @@ public class PlayerController : MonoBehaviour
     private bool flyNext = false;
     RaycastHit hit;
     Progressor flyBar;
+    UIView fadeView;
     PlayerSounds PS;
+    public AudioMixer audioMixer;
 
     [Header("Player Info:")]
     public string groundTag;
@@ -70,6 +75,7 @@ public class PlayerController : MonoBehaviour
         PS = GetComponent<PlayerSounds>();
         anim = GetComponent<Animator>();
         flyBar = GetComponent<Progressor>();
+        fadeView = FindObjectOfType<UIView>();
 
         currentState = PlayerState.Default;
         aimLine.enabled = false;
@@ -441,12 +447,32 @@ public class PlayerController : MonoBehaviour
 
     public void Respawn()
     {
+        StartCoroutine(Spawn());
+    }
+
+    private IEnumerator Spawn()
+    {
+        float hideWaitTime = fadeView.HideBehavior.Animation.TotalDuration - fadeView.HideBehavior.Animation.StartDelay;
+        float showWaitTime = fadeView.ShowBehavior.Animation.TotalDuration - fadeView.ShowBehavior.Animation.StartDelay;
+
+        fadeView.Hide();
+        yield return new WaitForSeconds(hideWaitTime);
+
+        float previousVolume;
+        audioMixer.GetFloat("SFXVolume", out previousVolume);
+        audioMixer.SetFloat("SFXVolume", -80);
+
         if (!respawnPoint.Equals(new Vector3()))
         {
             CC.enabled = false;
             this.transform.position = respawnPoint;
+            fadeView.Show();
             CC.enabled = true;
+            yield return new WaitForSeconds(showWaitTime);
         }
         else SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+
+        audioMixer.SetFloat("SFXVolume", previousVolume);
+        yield return null;
     }
 }
