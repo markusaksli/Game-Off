@@ -21,6 +21,7 @@ public class PlayerController : MonoBehaviour
     UIView fadeView;
     PlayerSounds PS;
     public AudioMixer audioMixer;
+    public TrailRenderer[] gliderTrails;
 
     [Header("Player Info:")]
     public string groundTag;
@@ -81,6 +82,11 @@ public class PlayerController : MonoBehaviour
         aimLine.enabled = false;
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+
+        foreach (TrailRenderer tr in gliderTrails)
+        {
+            tr.emitting = false;
+        }
     }
 
     void Update()
@@ -474,5 +480,20 @@ public class PlayerController : MonoBehaviour
 
         audioMixer.SetFloat("SFXVolume", previousVolume);
         yield return null;
+    }
+
+    public void TrailsStart()
+    {
+        foreach (TrailRenderer tr in gliderTrails)
+        {
+            tr.emitting = true;
+        }
+    }
+    public void TrailsStop()
+    {
+        foreach (TrailRenderer tr in gliderTrails)
+        {
+            tr.emitting = false;
+        }
     }
 }

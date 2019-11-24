@@ -97,6 +97,14 @@ ModelImporter:
         floatParameter: 0
         intParameter: 1
         messageOptions: 0
+      - time: 0.7552182
+        functionName: TrailsStop
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: 503606a803b5f204cb33185b7903f900,
+          type: 3}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
       transformMask: []
       maskType: 3
       maskSource: {instanceID: 0}
@@ -159,6 +167,14 @@ ModelImporter:
         functionName: PlayGlider
         data: 
         objectReferenceParameter: {fileID: 11500000, guid: dc0778cc953679a4d9cc8e1c2831b9a6,
+          type: 3}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
+      - time: 0.5017269
+        functionName: TrailsStart
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: 503606a803b5f204cb33185b7903f900,
           type: 3}
         floatParameter: 0
         intParameter: 0
