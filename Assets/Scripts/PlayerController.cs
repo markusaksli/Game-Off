@@ -167,6 +167,8 @@ public class PlayerController : MonoBehaviour
                 anim.SetBool("Flying", false);
                 anim.SetBool("Grounded", true);
 
+                TrailsStop();
+
                 jumpVelocity = 0;
                 CC.Move((Gravity() + DefaultMovement()) * Time.deltaTime); //Move player and execute movement methods
                 break;
@@ -438,6 +440,8 @@ public class PlayerController : MonoBehaviour
             tempMoveSpeed = 0;
             return Vector3.zero;
         }
+
+        anim.SetBool("Grounded", false);
 
         gravity = Mathf.Lerp(gravity, -flyGravity, 5f * Time.deltaTime);
 
