@@ -1291,7 +1291,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &2827084094237081587
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3725,7 +3725,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9011130428527865007}
-  m_LocalRotation: {x: -0.029274806, y: -0.000000017232413, z: -4.994153e-10, w: 0.99957144}
+  m_LocalRotation: {x: -0.029274806, y: 0.000000017232718, z: 5.0997734e-10, w: 0.99957144}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
