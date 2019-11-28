@@ -99,6 +99,80 @@ MonoBehaviour:
   fogType:
     m_OverrideState: 1
     m_Value: 3
+--- !u!114 &-254721534381977458
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 29b00527f85bb3346a4d2cb710971587, type: 3}
+  m_Name: VolumetricFog
+  m_EditorClassIdentifier: 
+  active: 1
+  m_AdvancedMode: 0
+  colorMode:
+    m_OverrideState: 1
+    m_Value: 1
+  color:
+    m_OverrideState: 1
+    m_Value: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+    hdr: 1
+    showAlpha: 0
+    showEyeDropper: 1
+  density:
+    m_OverrideState: 1
+    m_Value: 1
+    min: 0
+    max: 1
+  maxFogDistance:
+    m_OverrideState: 1
+    m_Value: 5000
+    min: 0
+  mipFogMaxMip:
+    m_OverrideState: 1
+    m_Value: 0.5
+    min: 0
+    max: 1
+  mipFogNear:
+    m_OverrideState: 1
+    m_Value: 0
+    min: 0
+  mipFogFar:
+    m_OverrideState: 1
+    m_Value: 1000
+    min: 0
+  albedo:
+    m_OverrideState: 1
+    m_Value: {r: 1, g: 1, b: 1, a: 1}
+    hdr: 0
+    showAlpha: 1
+    showEyeDropper: 1
+  meanFreePath:
+    m_OverrideState: 1
+    m_Value: 200
+    min: 1
+  baseHeight:
+    m_OverrideState: 1
+    m_Value: 0
+  meanHeight:
+    m_OverrideState: 1
+    m_Value: 10
+  anisotropy:
+    m_OverrideState: 1
+    m_Value: 0
+    min: -1
+    max: 1
+  globalLightProbeDimmer:
+    m_OverrideState: 1
+    m_Value: 1
+    min: 0
+    max: 1
+  enableDistantFog:
+    m_OverrideState: 1
+    m_Value: 0
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -115,6 +189,12 @@ MonoBehaviour:
   - {fileID: 2064299017566726608}
   - {fileID: -930721611599212633}
   - {fileID: -1262575594951481606}
+  - {fileID: -254721534381977458}
+  - {fileID: 2416041269454037550}
+  - {fileID: 2112198533379322323}
+  - {fileID: 6827600269174198408}
+  - {fileID: 6489005503300747671}
+  - {fileID: 7017430414322077313}
 --- !u!114 &2064299017566726608
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -140,13 +220,13 @@ MonoBehaviour:
     max: 4
   cascadeShadowSplit0:
     m_OverrideState: 1
-    m_Value: 0.05
+    m_Value: 0.07019354
   cascadeShadowSplit1:
     m_OverrideState: 1
-    m_Value: 0.15
+    m_Value: 0.15253755
   cascadeShadowSplit2:
     m_OverrideState: 1
-    m_Value: 0.3
+    m_Value: 0.3476559
   cascadeShadowBorder0:
     m_OverrideState: 1
     m_Value: 0
@@ -159,3 +239,178 @@ MonoBehaviour:
   cascadeShadowBorder3:
     m_OverrideState: 1
     m_Value: 0
+--- !u!114 &2112198533379322323
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 598e2d32e2c7b0c418e030c3236d663a, type: 3}
+  m_Name: ChromaticAberration
+  m_EditorClassIdentifier: 
+  active: 1
+  m_AdvancedMode: 0
+  spectralLut:
+    m_OverrideState: 1
+    m_Value: {fileID: 0}
+  intensity:
+    m_OverrideState: 1
+    m_Value: 0.065
+    min: 0
+    max: 1
+  maxSamples:
+    m_OverrideState: 1
+    m_Value: 3
+    min: 3
+    max: 24
+--- !u!114 &2416041269454037550
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b8bcdf71d7fafa419fca1ed162f5fc9, type: 3}
+  m_Name: ColorAdjustments
+  m_EditorClassIdentifier: 
+  active: 1
+  m_AdvancedMode: 0
+  postExposure:
+    m_OverrideState: 1
+    m_Value: 1.37
+  contrast:
+    m_OverrideState: 1
+    m_Value: -0
+    min: -100
+    max: 100
+  colorFilter:
+    m_OverrideState: 1
+    m_Value: {r: 0.7578583, g: 0.7578583, b: 0.7578583, a: 1}
+    hdr: 1
+    showAlpha: 0
+    showEyeDropper: 1
+  hueShift:
+    m_OverrideState: 1
+    m_Value: 0
+    min: -180
+    max: 180
+  saturation:
+    m_OverrideState: 1
+    m_Value: 25
+    min: -100
+    max: 100
+--- !u!114 &6489005503300747671
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b51a78e223a2e504bb88a059b55229ea, type: 3}
+  m_Name: WhiteBalance
+  m_EditorClassIdentifier: 
+  active: 1
+  m_AdvancedMode: 0
+  temperature:
+    m_OverrideState: 1
+    m_Value: 66
+    min: -100
+    max: 100
+  tint:
+    m_OverrideState: 1
+    m_Value: 0
+    min: -100
+    max: 100
+--- !u!114 &6827600269174198408
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9008a067f4d626c4d8bc4bc48f04bb89, type: 3}
+  m_Name: AmbientOcclusion
+  m_EditorClassIdentifier: 
+  active: 1
+  m_AdvancedMode: 0
+  intensity:
+    m_OverrideState: 1
+    m_Value: 0.45
+    min: 0
+    max: 4
+  stepCount:
+    m_OverrideState: 1
+    m_Value: 5
+    min: 2
+    max: 32
+  radius:
+    m_OverrideState: 1
+    m_Value: 0.69
+    min: 0.25
+    max: 5
+  fullResolution:
+    m_OverrideState: 1
+    m_Value: 1
+  maximumRadiusInPixels:
+    m_OverrideState: 1
+    m_Value: 16
+    min: 16
+    max: 256
+  directLightingStrength:
+    m_OverrideState: 1
+    m_Value: 0.181
+    min: 0
+    max: 1
+  enableRaytracing:
+    m_OverrideState: 1
+    m_Value: 0
+  rayLength:
+    m_OverrideState: 1
+    m_Value: 0.5
+    min: 0
+    max: 50
+  enableFilter:
+    m_OverrideState: 1
+    m_Value: 0
+  numSamples:
+    m_OverrideState: 1
+    m_Value: 4
+    min: 1
+    max: 64
+  filterRadius:
+    m_OverrideState: 1
+    m_Value: 16
+    min: 1
+    max: 32
+--- !u!114 &7017430414322077313
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da5ab44aadfb1804db5fd470983ac1b8, type: 3}
+  m_Name: LiftGammaGain
+  m_EditorClassIdentifier: 
+  active: 1
+  m_AdvancedMode: 0
+  lift:
+    m_OverrideState: 1
+    m_Value: {x: 0.97265446, y: 0.9584227, z: 1, w: 0}
+  gamma:
+    m_OverrideState: 1
+    m_Value: {x: 0.96338886, y: 1, z: 0.90715575, w: 0}
+  gain:
+    m_OverrideState: 1
+    m_Value: {x: 0.60828197, y: 0.41339076, z: 1, w: 0}
