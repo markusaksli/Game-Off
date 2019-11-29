@@ -4,7 +4,7 @@ public class Button : MonoBehaviour
 {
     // Press F to open UI Panel element
     public GameObject instructions;
-    
+
     // Check if the Player is in the button's collider
     public void OnTriggerStay(Collider other)
     {
@@ -19,7 +19,7 @@ public class Button : MonoBehaviour
             instructions.SetActive(false);
         }
     }
-    
+
     //Made this function virtual so other doors could inherit
     //the same behaviour.
     public virtual void Interact(Collider other)
@@ -31,9 +31,11 @@ public class Button : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.F))
             {
                 animator.SetTrigger("DoorOpenClose");
+                instructions.SetActive(false);
+                this.gameObject.SetActive(false);
             }
         }
     }
 
-    
+
 }

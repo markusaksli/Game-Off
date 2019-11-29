@@ -92,7 +92,7 @@ MonoBehaviour:
   m_AdvancedMode: 0
   skyType:
     m_OverrideState: 1
-    m_Value: 2
+    m_Value: 1
   skyAmbientMode:
     m_OverrideState: 1
     m_Value: 0
@@ -190,11 +190,12 @@ MonoBehaviour:
   - {fileID: -930721611599212633}
   - {fileID: -1262575594951481606}
   - {fileID: -254721534381977458}
-  - {fileID: 2416041269454037550}
   - {fileID: 2112198533379322323}
   - {fileID: 6827600269174198408}
   - {fileID: 6489005503300747671}
   - {fileID: 7017430414322077313}
+  - {fileID: 3417516570321323748}
+  - {fileID: 7828584515244991102}
 --- !u!114 &2064299017566726608
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -266,7 +267,7 @@ MonoBehaviour:
     m_Value: 3
     min: 3
     max: 24
---- !u!114 &2416041269454037550
+--- !u!114 &3417516570321323748
 MonoBehaviour:
   m_ObjectHideFlags: 3
   m_CorrespondingSourceObject: {fileID: 0}
@@ -275,35 +276,46 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4b8bcdf71d7fafa419fca1ed162f5fc9, type: 3}
-  m_Name: ColorAdjustments
+  m_Script: {fileID: 11500000, guid: 59b6606ef2548734bb6d11b9d160bc7e, type: 3}
+  m_Name: HDRISky
   m_EditorClassIdentifier: 
   active: 1
   m_AdvancedMode: 0
-  postExposure:
-    m_OverrideState: 1
-    m_Value: 1.37
-  contrast:
-    m_OverrideState: 1
-    m_Value: -0
-    min: -100
-    max: 100
-  colorFilter:
-    m_OverrideState: 1
-    m_Value: {r: 0.7578583, g: 0.7578583, b: 0.7578583, a: 1}
-    hdr: 1
-    showAlpha: 0
-    showEyeDropper: 1
-  hueShift:
+  rotation:
     m_OverrideState: 1
     m_Value: 0
-    min: -180
-    max: 180
-  saturation:
+    min: 0
+    max: 360
+  skyIntensityMode:
     m_OverrideState: 1
-    m_Value: 25
-    min: -100
-    max: 100
+    m_Value: 0
+  exposure:
+    m_OverrideState: 1
+    m_Value: -5.19
+  multiplier:
+    m_OverrideState: 1
+    m_Value: 1
+    min: 0
+  upperHemisphereLuxValue:
+    m_OverrideState: 1
+    m_Value: 0.46831083
+    min: 0
+  desiredLuxValue:
+    m_OverrideState: 1
+    m_Value: 20000
+  updateMode:
+    m_OverrideState: 1
+    m_Value: 0
+  updatePeriod:
+    m_OverrideState: 1
+    m_Value: 0
+    min: 0
+  includeSunInBaking:
+    m_OverrideState: 1
+    m_Value: 0
+  hdriSky:
+    m_OverrideState: 1
+    m_Value: {fileID: 8900000, guid: c8f21f62fdb3e43c5b32917c84683698, type: 3}
 --- !u!114 &6489005503300747671
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -320,7 +332,7 @@ MonoBehaviour:
   m_AdvancedMode: 0
   temperature:
     m_OverrideState: 1
-    m_Value: 66
+    m_Value: 11
     min: -100
     max: 100
   tint:
@@ -340,7 +352,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9008a067f4d626c4d8bc4bc48f04bb89, type: 3}
   m_Name: AmbientOcclusion
   m_EditorClassIdentifier: 
-  active: 1
+  active: 0
   m_AdvancedMode: 0
   intensity:
     m_OverrideState: 1
@@ -414,3 +426,25 @@ MonoBehaviour:
   gain:
     m_OverrideState: 1
     m_Value: {x: 0.60828197, y: 0.41339076, z: 1, w: 0}
+--- !u!114 &7828584515244991102
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f034cba68ab55e046ae1445a42f18c0e, type: 3}
+  m_Name: IndirectLightingController
+  m_EditorClassIdentifier: 
+  active: 1
+  m_AdvancedMode: 0
+  indirectSpecularIntensity:
+    m_OverrideState: 1
+    m_Value: 1
+    min: 0
+  indirectDiffuseIntensity:
+    m_OverrideState: 1
+    m_Value: 1
+    min: 0
