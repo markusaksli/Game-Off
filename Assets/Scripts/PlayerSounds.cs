@@ -6,7 +6,8 @@ public class PlayerSounds : MonoBehaviour
 {
     [Range(0f, 1f)] public float footstepVolume;
     [Range(0f, 1f)] public float jumpVolume;
-    [Range(0f, 1f)] public float landVolume;
+    [Range(0f, 1f)] public float minLandVolume;
+    [Range(0f, 1f)] public float maxLandVolume;
     [Range(0f, 1f)] public float flyVolume;
     [Range(0f, 1f)] public float gliderEquipVolume;
     [Range(0f, 1f)] public float gliderHolsterVolume;
@@ -159,7 +160,7 @@ public class PlayerSounds : MonoBehaviour
                         break;
                     }
                 }
-                sc.volume = landVolume;
+                sc.volume = minLandVolume + (maxLandVolume - minLandVolume) * PC.lastGrav;
                 sc.clip = sounds[land + 5];
                 sc.Play();
                 return;

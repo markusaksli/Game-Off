@@ -32,7 +32,7 @@ public class Button : MonoBehaviour
             {
                 animator.SetTrigger("DoorOpenClose");
                 instructions.SetActive(false);
-                this.gameObject.SetActive(false);
+                this.enabled = false;
             }
         }
     }

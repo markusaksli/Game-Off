@@ -34,6 +34,7 @@ public class PlayerController : MonoBehaviour
     public bool enableMovement;
     public bool enableGravity;
     public bool death;
+    public float lastGrav;
     [Space(20)]
 
     [Header("Gravity:")]
@@ -243,6 +244,8 @@ public class PlayerController : MonoBehaviour
             {
                 if (currentState == PlayerState.Falling)
                 {
+                    lastGrav = Mathf.Abs(gravVector.y / maxGravity);
+                    Debug.Log(lastGrav + "    " + gravVector);
                     gravVector = Vector3.zero;
                     desMoveDir = Vector3.zero;
                     tempMoveSpeed = 0;
@@ -254,19 +257,25 @@ public class PlayerController : MonoBehaviour
             }
             else
             {
+                if (gravity == 10)
+                {
+                    gravVector.y = 0;
+                }
+
                 currentState = PlayerState.Falling;
                 Vector3 c = Vector3.Cross(hit.normal, Vector3.up);
                 //gravVector = -Vector3.Cross(c, hit.normal).normalized * slideFriction * Mathf.Pow(Mathf.Sin(Mathf.Deg2Rad * currentAngle), 4);
-                gravVector = -Vector3.Cross(c, hit.normal).normalized * slideFriction;
-                if (currentAngle > 83f)
-                {
-                    gravVector.x *= 10f;
-                    gravVector.z *= 10f;
-                }
-                if (gravVector.y < -maxGravity * (currentAngle / 90f))
+
+                gravVector -= Vector3.Cross(c, hit.normal).normalized * slideFriction * Mathf.Pow(Mathf.Sin(Mathf.Deg2Rad * currentAngle), 4) * Time.deltaTime;
+
+                /*if (gravVector.y < -maxGravity * (currentAngle / 90f))
                 {
                     gravVector.y = -maxGravity * (currentAngle / 90f);
                 }
+                if (currentAngle > 83f)
+                {
+                    gravVector *= 10f;
+                }*/
                 return gravVector;
             }
         }
@@ -476,6 +485,7 @@ public class PlayerController : MonoBehaviour
         {
             CC.enabled = false;
             this.transform.position = respawnPoint;
+            yield return new WaitForSeconds(1f);
             fadeView.Show();
             CC.enabled = true;
             yield return new WaitForSeconds(showWaitTime);
