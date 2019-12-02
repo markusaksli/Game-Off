@@ -12,6 +12,10 @@ public class MusicLayering : MonoBehaviour
     public AudioClip[] layerClips;
     public bool[] layerOnStart;
     public List<AudioSource> layerSources;
+    public List<int> FadeOutSources;
+    public List<int> FadeInSources;
+    public float FadeOutTime;
+    public float FadeInTime;
 
     void Start()
     {
@@ -34,18 +38,18 @@ public class MusicLayering : MonoBehaviour
         }
 
     }
-    //TODO: Create method to Slerp volume between 0 and 1 when called
-    /*    public void Blend(bool inOut, int layer)
+
+    private void Update()
+    {
+        foreach (int i in FadeOutSources)
         {
-            if (inOut)
-            {
-                layerSources[layer].volume = Mathf.Slerp(layerSources[layer].volume, 0, 100f * Time.deltaTime);
-            }
-            else
-            {
-                layerSources[layer].volume = Mathf.Slerp(layerSources[layer].volume, 1, 100f * Time.deltaTime);
-            }
-        }*/
+            layerSources[i].volume = Mathf.Lerp(layerSources[i].volume, 0f, FadeOutTime * Time.deltaTime);
+        }
+        foreach (int i in FadeInSources)
+        {
+            layerSources[i].volume = Mathf.Lerp(layerSources[i].volume, 1f, FadeInTime * Time.deltaTime);
+        }
+    }
     public IEnumerator TrackSwitch(bool on, int layer)
     {
         yield return new WaitForSeconds(layerSources[layer].clip.length - layerSources[layer].time); //Wait until the end of the clip
@@ -58,34 +62,31 @@ public class MusicLayering : MonoBehaviour
             layerSources[layer].volume = 0;
         }
     }
-    private void Update()
+
+    public void AddFadeOut(int layer)
     {
-        if (!DisableControl)
-        {
-            if (Input.GetKeyDown(KeyCode.A))
-            {
-                StartCoroutine(TrackSwitch(false, layer));
-            }
-            if (Input.GetKeyDown(KeyCode.D))
-            {
-                StartCoroutine(TrackSwitch(true, layer));
-            }
-            if (Input.GetKeyDown(KeyCode.W))
-            {
-                layer += 1;
-                if (layer == 3)
-                {
-                    layer = 0;
-                }
-            }
-            if (Input.GetKeyDown(KeyCode.S))
-            {
-                layer -= 1;
-                if (layer == -1)
-                {
-                    layer = 2;
-                }
-            }
-        }
+        FadeOutSources.Add(layer);
+        FadeInSources.Remove(layer);
+    }
+    public void AddFadeIn(int layer)
+    {
+        FadeInSources.Add(layer);
+        FadeOutSources.Remove(layer);
+    }
+    public void StartClip(int layer)
+    {
+        StartCoroutine(TrackSwitch(true, layer));
+    }
+    public void StopClip(int layer)
+    {
+        StartCoroutine(TrackSwitch(false, layer));
+    }
+    public void PlayOnce(int layer)
+    {
+        FadeInSources.Remove(layer);
+        FadeOutSources.Remove(layer);
+        layerSources[layer].loop = false;
+        layerSources[layer].volume = 1;
+        layerSources[layer].Play();
     }
 }

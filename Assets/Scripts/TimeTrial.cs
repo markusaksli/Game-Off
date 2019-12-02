@@ -1,30 +1,41 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UI;
+﻿using UnityEngine;
 
 public class TimeTrial : MonoBehaviour
 {
     public GameObject instructions;
-    public GameObject timer;
-    public bool StartTrial = false;
-    private Image time;
-    public static Vector3 startPos;
-    
-    // Check if player has activated time trial by pressing F
-    // next to the start. Then activate timer in player UI Canvas
-    // and save starting position so he could be teleported back to start
-    // if he fails or succeeds.
+    public bool TrialStarted = false;
+    public bool TrialComplete = false;
+    public float trialTime;
+    public int buttonCount;
+    public int trialButtonCount;
+    float time;
+
+    Animator anim;
+    public Animator door;
+    AudioSource aud;
+    public AudioSource trialNoise;
+    public AudioSource trialEndNoise;
+    public AudioSource doorNoise;
+
+    private void Start()
+    {
+        instructions.SetActive(false);
+        aud = GetComponentInChildren<AudioSource>();
+        anim = GetComponentInChildren<Animator>();
+    }
+
     public void OnTriggerStay(Collider other)
     {
-        if (other.tag == "Player" && TrialCheckpoint.Completed == false)
+        if (other.tag == "Player" && !TrialComplete && !TrialStarted)
         {
             instructions.SetActive(true);
             if (Input.GetKeyDown(KeyCode.F))
             {
-                timer.SetActive(true);
-                StartTrial = true;
-                startPos = other.transform.position;
+                instructions.SetActive(false);
+                TrialStarted = true;
+                anim.SetTrigger("Button");
+                aud.Play();
+                trialNoise.Play();
             }
         }
     }
@@ -43,28 +54,41 @@ public class TimeTrial : MonoBehaviour
     // reset the timer.
     void Update()
     {
-        time = timer.GetComponent<Image>();
-        
-        if (StartTrial == true && TrialCheckpoint.Completed == false)
-        {          
-            time.fillAmount -= Time.deltaTime / 10.0f;
-        }
-
-        if (time.fillAmount <= 0.0f)
+        if (!TrialComplete)
         {
-            GameObject player = GameObject.Find("Player");
-            player.gameObject.SetActive(false);
-            player.transform.position = TimeTrial.startPos;
-            player.gameObject.SetActive(true);
-           
-           
-            StartTrial = false;
-            time.fillAmount = 1.0f;
-            timer.SetActive(false);
+            if (TrialStarted)
+            {
+                time -= Time.deltaTime;
+                if (time < 0f)
+                {
+                    TrialStarted = false;
+                    trialNoise.Stop();
+                    trialEndNoise.Play();
+                    anim.SetTrigger("Button");
+                    aud.Play();
+                    return;
+                }
+                if (trialButtonCount == 0)
+                {
+                    TrialStarted = false;
+                    TrialComplete = true;
+                    trialNoise.Stop();
+                    trialEndNoise.Play();
+                    doorNoise.Play();
+                    door.SetTrigger("DoorOpenClose");
+                    return;
+                }
+
+            }
+            else
+            {
+                time = trialTime;
+                trialButtonCount = buttonCount;
+            }
         }
     }
 
-    
+
 
 
 }

@@ -16,10 +16,10 @@ public class PlayerController : MonoBehaviour
     private Vector3 desMoveDir;
     private bool justJumped = false;
     private bool flyNext = false;
+    private bool spawning;
     RaycastHit hit;
     Progressor flyBar;
     UIView fadeView;
-    PlayerSounds PS;
     public AudioMixer audioMixer;
     public TrailRenderer[] gliderTrails;
 
@@ -74,7 +74,6 @@ public class PlayerController : MonoBehaviour
     {
         cam = Camera.main;
         CC = GetComponent<CharacterController>();
-        PS = GetComponent<PlayerSounds>();
         anim = GetComponent<Animator>();
         flyBar = GetComponent<Progressor>();
         fadeView = FindObjectOfType<UIView>();
@@ -92,10 +91,18 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
+        if (!enableMovement)
+        {
+            InputX = 0;
+            InputZ = 0;
+        }
+        else
+        {
+            InputX = Input.GetAxis("Horizontal"); //Update Input
+            InputZ = Input.GetAxis("Vertical");
+        }
         isGrounded = CC.isGrounded;
         CheckCollision();
-        InputX = Input.GetAxis("Horizontal"); //Update Input
-        InputZ = Input.GetAxis("Vertical");
         InputDecider();
     }
 
@@ -105,22 +112,18 @@ public class PlayerController : MonoBehaviour
         if (isGrounded)
         {
             Physics.SphereCast(new Vector3(transform.position.x, transform.position.y + castOffset, transform.position.z), castRadius, Vector3.down, out hit, 0.8f);
-            currentAngle = Vector3.Angle(transform.up, hit.normal);
-            sliding = (currentAngle > CC.slopeLimit);
             if (hit.collider != null && hit.collider.gameObject != null)
             {
                 groundTag = hit.transform.tag;
             }
+            currentAngle = Vector3.Angle(transform.up, hit.normal);
+            sliding = (currentAngle > CC.slopeLimit);
         }
     }
 
     //Get input for state changes and execute state logic
     void InputDecider()
     {
-        if (!enableMovement)
-        {
-            return;
-        }
         //Start aiming if right mouse and in default state
         /*        if (currentState == PlayerState.Default)
                 {
@@ -132,7 +135,7 @@ public class PlayerController : MonoBehaviour
 
                 }*/
         //Jump and Fly
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.Space) && enableMovement)
         {
             //Only jump if in default and not sliding
             if (currentState == PlayerState.Default && !sliding)
@@ -245,7 +248,6 @@ public class PlayerController : MonoBehaviour
                 if (currentState == PlayerState.Falling)
                 {
                     lastGrav = Mathf.Abs(gravVector.y / maxGravity);
-                    Debug.Log(lastGrav + "    " + gravVector);
                     gravVector = Vector3.zero;
                     desMoveDir = Vector3.zero;
                     tempMoveSpeed = 0;
@@ -264,18 +266,9 @@ public class PlayerController : MonoBehaviour
 
                 currentState = PlayerState.Falling;
                 Vector3 c = Vector3.Cross(hit.normal, Vector3.up);
-                //gravVector = -Vector3.Cross(c, hit.normal).normalized * slideFriction * Mathf.Pow(Mathf.Sin(Mathf.Deg2Rad * currentAngle), 4);
 
                 gravVector -= Vector3.Cross(c, hit.normal).normalized * slideFriction * Mathf.Pow(Mathf.Sin(Mathf.Deg2Rad * currentAngle), 4) * Time.deltaTime;
 
-                /*if (gravVector.y < -maxGravity * (currentAngle / 90f))
-                {
-                    gravVector.y = -maxGravity * (currentAngle / 90f);
-                }
-                if (currentAngle > 83f)
-                {
-                    gravVector *= 10f;
-                }*/
                 return gravVector;
             }
         }
@@ -466,33 +459,39 @@ public class PlayerController : MonoBehaviour
 
     public void Respawn()
     {
-        StartCoroutine(Spawn());
+        if (!spawning)
+        {
+            StartCoroutine(Spawn());
+        }
     }
 
     private IEnumerator Spawn()
     {
+        spawning = true;
         float hideWaitTime = fadeView.HideBehavior.Animation.TotalDuration - fadeView.HideBehavior.Animation.StartDelay;
         float showWaitTime = fadeView.ShowBehavior.Animation.TotalDuration - fadeView.ShowBehavior.Animation.StartDelay;
 
         fadeView.Hide();
         yield return new WaitForSeconds(hideWaitTime);
-
+        Debug.Log("Blackout");
         float previousVolume;
         audioMixer.GetFloat("SFXVolume", out previousVolume);
+        Debug.Log(previousVolume);
         audioMixer.SetFloat("SFXVolume", -80);
 
         if (!respawnPoint.Equals(new Vector3()))
         {
             CC.enabled = false;
             this.transform.position = respawnPoint;
-            yield return new WaitForSeconds(1f);
             fadeView.Show();
             CC.enabled = true;
             yield return new WaitForSeconds(showWaitTime);
+            Debug.Log("End of blackout");
         }
         else SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-
+        Debug.Log("End of Coroutine");
         audioMixer.SetFloat("SFXVolume", previousVolume);
+        spawning = false;
         yield return null;
     }
 

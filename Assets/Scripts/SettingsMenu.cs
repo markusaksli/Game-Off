@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Audio;
+using UnityEngine.SceneManagement;
 
 public class SettingsMenu : MonoBehaviour
 {
@@ -37,7 +39,7 @@ public class SettingsMenu : MonoBehaviour
 
         for (int i = 0; i < resolutions.Length; i++)
         {
-            string option = resolutions[i].width + "x" + resolutions[i].height;
+            string option = resolutions[i].width + "x" + resolutions[i].height + "@" + resolutions[i].refreshRate + "HZ";
             if (exclusions.Contains(option) == false)
             {
                 options.Add(option);
@@ -53,7 +55,6 @@ public class SettingsMenu : MonoBehaviour
         resolutionsDropdown.AddOptions(options);
         resolutionsDropdown.value = currentResolutionIndex;
         resolutionsDropdown.RefreshShownValue();
-
     }
 
     // Changes resolution depending on the choice in a dropdown.
@@ -70,7 +71,15 @@ public class SettingsMenu : MonoBehaviour
     // Here I'm changing examplemixer's master volume.
     public void SetVolume(float volume)
     {
-        audioMixer.SetFloat("MasterVolume", volume);
+        audioMixer.SetFloat("MasterVolume", Mathf.Log10(volume) * 20);
+    }
+    public void SetMusicVolume(float volume)
+    {
+        audioMixer.SetFloat("MusicVolume", Mathf.Log10(volume) * 20);
+    }
+    public void SetSfxVolume(float volume)
+    {
+        audioMixer.SetFloat("SFXVolume", Mathf.Log10(volume) * 20);
     }
 
     // Changes game quality settings based on the choice in a dropdown.
@@ -84,4 +93,14 @@ public class SettingsMenu : MonoBehaviour
     {
         Screen.fullScreen = IsFullscreen;
     }
+    public void LoadNextScene()
+    {
+        StartCoroutine(Load());
+    }
+    IEnumerator Load()
+    {
+        yield return new WaitForSeconds(1f);
+        SceneManager.LoadScene(1);
+    }
+
 }

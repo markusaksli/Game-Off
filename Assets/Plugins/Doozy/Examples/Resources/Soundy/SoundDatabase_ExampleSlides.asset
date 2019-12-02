@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: SoundDatabase_ExampleSlides
   m_EditorClassIdentifier: 
   DatabaseName: Example Slides
-  OutputAudioMixerGroup: {fileID: 243158569454155258, guid: bc155dfdccec1be4780029a8bd542de5,
+  OutputAudioMixerGroup: {fileID: -5032400101510208018, guid: 9f06232f68371744c8b160f9f02f84e4,
     type: 2}
   SoundNames:
   - No Sound

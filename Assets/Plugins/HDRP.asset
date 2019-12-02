@@ -17,7 +17,7 @@ MonoBehaviour:
   m_RenderPipelineRayTracingResources: {fileID: 0}
   m_RenderingPathDefaultCameraFrameSettings:
     bitDatas:
-      data1: 69456063627037
+      data1: 69473243496221
       data2: 4539628424389459968
     lodBias: 1
     lodBiasMode: 0
@@ -42,11 +42,11 @@ MonoBehaviour:
   m_RenderPipelineSettings:
     supportShadowMask: 1
     supportSSR: 0
-    supportSSAO: 1
+    supportSSAO: 0
     supportSubsurfaceScattering: 1
     increaseSssSampleCount: 0
     supportVolumetrics: 1
-    increaseResolutionOfVolumetrics: 0
+    increaseResolutionOfVolumetrics: 1
     supportLightLayers: 0
     supportDistortion: 1
     supportTransparentBackface: 1
@@ -72,7 +72,7 @@ MonoBehaviour:
       reflectionCubemapSize: 256
       reflectionCacheCompressed: 0
       planarReflectionCacheCompressed: 0
-      skyReflectionSize: 256
+      skyReflectionSize: 4096
       skyLightingOverrideLayerMask:
         serializedVersion: 2
         m_Bits: 0
@@ -94,7 +94,7 @@ MonoBehaviour:
         shadowAtlasResolution: 4096
         shadowAtlasDepthBits: 32
         useDynamicViewportRescale: 1
-      supportScreenSpaceShadows: 0
+      supportScreenSpaceShadows: 1
       maxScreenSpaceShadows: 2
     decalSettings:
       drawDistance: 1000
