@@ -7,44 +7,20 @@ public class Button : MonoBehaviour
     public Animator door;
     public AudioSource doorSource;
     public AudioSource buttonSource;
-    bool used = false;
+    Animator animator;
+    public bool inRange = false;
+    public bool used = false;
 
     private void Start()
     {
         instructions.SetActive(false);
         buttonSource = GetComponentInChildren<AudioSource>();
+        animator = GetComponentInChildren<Animator>();
     }
-
-    // Check if the Player is in the button's collider
-    public void OnTriggerStay(Collider other)
+    private void Update()
     {
-        if (!used)
+        if (!used && inRange)
         {
-            Interact(other);
-        }
-        else
-        {
-            instructions.SetActive(false);
-        }
-    }
-
-    //If the Player exits the button's range stop showing instructions
-    public void OnTriggerExit(Collider other)
-    {
-        if (other.tag == "Player" && !used)
-        {
-            instructions.SetActive(false);
-        }
-    }
-
-    //Made this function virtual so other doors could inherit
-    //the same behaviour.
-    public virtual void Interact(Collider other)
-    {
-        if (other.tag == "Player" && !used)
-        {
-            instructions.SetActive(true);
-            Animator animator = GetComponentInChildren<Animator>();
             if (Input.GetKeyDown(KeyCode.F))
             {
                 animator.SetTrigger("DoorOpenClose");
@@ -57,5 +33,21 @@ public class Button : MonoBehaviour
         }
     }
 
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Player") && !used)
+        {
+            inRange = true;
+            instructions.SetActive(true);
+        }
+    }
 
+    public void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            inRange = false;
+            instructions.SetActive(false);
+        }
+    }
 }

@@ -13,7 +13,7 @@ public class Checkpoint : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.tag.Equals("Player"))
+        if (other.CompareTag("Player"))
         {
             playerDeathManager.SetSpawnPoint(transform.position);
         }

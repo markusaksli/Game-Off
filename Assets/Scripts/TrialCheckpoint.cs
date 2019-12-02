@@ -6,6 +6,7 @@ public class TrialCheckpoint : MonoBehaviour
     public TimeTrial TR;
     public GameObject instructions;
     bool pressed;
+    bool inRange;
 
     AudioSource aud;
     Animator anim;
@@ -17,9 +18,27 @@ public class TrialCheckpoint : MonoBehaviour
         anim = GetComponentInChildren<Animator>();
     }
 
-    public void OnTriggerStay(Collider other)
+    private void OnTriggerEnter(Collider other)
     {
-        if (other.tag == "Player" && !TR.TrialComplete && TR.TrialStarted && !pressed)
+        if (other.CompareTag("Player") && !TR.TrialComplete && TR.TrialStarted && !pressed)
+        {
+            inRange = true;
+            instructions.SetActive(true);
+        }
+    }
+
+    public void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            inRange = false;
+            instructions.SetActive(false);
+        }
+    }
+
+    public void Update()
+    {
+        if (inRange && !TR.TrialComplete && TR.TrialStarted && !pressed)
         {
             instructions.SetActive(true);
             if (Input.GetKeyDown(KeyCode.F))
@@ -31,19 +50,11 @@ public class TrialCheckpoint : MonoBehaviour
                 TR.trialButtonCount -= 1;
             }
         }
-    }
-
-    public void OnTriggerExit(Collider other)
-    {
-        if (other.tag == "Player")
+        else if (inRange)
         {
             instructions.SetActive(false);
         }
-    }
 
-
-    public void Update()
-    {
         if (!TR.TrialComplete && !TR.TrialStarted && pressed)
         {
             anim.SetTrigger("Button");

@@ -9,6 +9,7 @@ public class TimeTrial : MonoBehaviour
     public int buttonCount;
     public int trialButtonCount;
     float time;
+    bool inRange = false;
 
     Animator anim;
     public Animator door;
@@ -24,11 +25,29 @@ public class TimeTrial : MonoBehaviour
         anim = GetComponentInChildren<Animator>();
     }
 
-    public void OnTriggerStay(Collider other)
+    private void OnTriggerEnter(Collider other)
     {
-        if (other.tag == "Player" && !TrialComplete && !TrialStarted)
+        if (other.CompareTag("Player") && !TrialComplete && !TrialStarted)
         {
+            inRange = true;
             instructions.SetActive(true);
+        }
+    }
+
+    public void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            inRange = false;
+            instructions.SetActive(false);
+        }
+    }
+
+
+    void Update()
+    {
+        if (inRange && !TrialComplete && !TrialStarted)
+        {
             if (Input.GetKeyDown(KeyCode.F))
             {
                 instructions.SetActive(false);
@@ -38,22 +57,7 @@ public class TimeTrial : MonoBehaviour
                 trialNoise.Play();
             }
         }
-    }
 
-
-    public void OnTriggerExit(Collider other)
-    {
-        if (other.tag == "Player")
-        {
-            instructions.SetActive(false);
-        }
-    }
-
-    // If the player has started the trial start counting down.
-    // If he runs out of time teleport him back to trial start and
-    // reset the timer.
-    void Update()
-    {
         if (!TrialComplete)
         {
             if (TrialStarted)

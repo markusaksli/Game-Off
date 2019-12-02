@@ -18,7 +18,7 @@ public class MusicChangeCollider : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.tag == "Player")
+        if (other.CompareTag("Player"))
         {
             foreach (int layer in FadeIn)
             {
