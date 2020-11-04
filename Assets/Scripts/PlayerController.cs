@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.SceneManagement;
 
+
 public class PlayerController : MonoBehaviour
 {
     //References
@@ -473,10 +474,8 @@ public class PlayerController : MonoBehaviour
 
         fadeView.Hide();
         yield return new WaitForSeconds(hideWaitTime);
-        Debug.Log("Blackout");
         float previousVolume;
         audioMixer.GetFloat("SFXVolume", out previousVolume);
-        Debug.Log(previousVolume);
         audioMixer.SetFloat("SFXVolume", -80);
 
         if (!respawnPoint.Equals(new Vector3()))
@@ -486,10 +485,8 @@ public class PlayerController : MonoBehaviour
             fadeView.Show();
             CC.enabled = true;
             yield return new WaitForSeconds(showWaitTime);
-            Debug.Log("End of blackout");
         }
         else SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-        Debug.Log("End of Coroutine");
         audioMixer.SetFloat("SFXVolume", previousVolume);
         spawning = false;
         yield return null;

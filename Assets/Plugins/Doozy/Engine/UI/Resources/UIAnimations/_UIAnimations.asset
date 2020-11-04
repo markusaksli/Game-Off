@@ -42,6 +42,7 @@ MonoBehaviour:
     - Drop
     - Fade
     - Flip
+    - Level Fade
     - Organic
     - Rotate
     - Scale
@@ -53,12 +54,12 @@ MonoBehaviour:
     - {fileID: 11400000, guid: 69e2ab74d8d45124a8a536cdca29d173, type: 2}
     - {fileID: 11400000, guid: 1faa7606c9a750446b9ce9844faf6e98, type: 2}
     - {fileID: 11400000, guid: faaa8b034882d0e4c887492e656135c7, type: 2}
+    - {fileID: 11400000, guid: fc85e99338d33184da4659091d66e67f, type: 2}
     - {fileID: 11400000, guid: d48941b9cb53ba0468eb9fc04c33a358, type: 2}
     - {fileID: 11400000, guid: 5cc54cfcd21d26546be54db4451e4065, type: 2}
     - {fileID: 11400000, guid: 451487294b711bf4ea50830836f44a3e, type: 2}
     - {fileID: 11400000, guid: 90e01018ab79dce47b7ee263cbcb51c1, type: 2}
     - {fileID: 11400000, guid: 0779596c07b02974084eb1cda5b86f17, type: 2}
-    - {fileID: 11400000, guid: fc85e99338d33184da4659091d66e67f, type: 2}
   Loop:
     DatabaseNames:
     - Elastic

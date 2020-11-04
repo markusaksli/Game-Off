@@ -13,7 +13,7 @@ public class GameEnd : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.tag == "Player")
+        if (other.CompareTag("Player"))
         {
             PC.enableMovement = false;
             collided = true;
