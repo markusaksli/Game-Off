@@ -157,7 +157,7 @@ MonoBehaviour:
     type: 2}
   m_RenderingPathDefaultCameraFrameSettings:
     bitDatas:
-      data1: 70280697085789
+      data1: 70297876954973
       data2: 4539628425463136256
     lodBias: 1
     lodBiasMode: 0
@@ -191,7 +191,7 @@ MonoBehaviour:
   m_RenderPipelineSettings:
     supportShadowMask: 1
     supportSSR: 0
-    supportSSAO: 0
+    supportSSAO: 1
     supportSubsurfaceScattering: 0
     increaseSssSampleCount: 0
     supportVolumetrics: 1
@@ -246,7 +246,7 @@ MonoBehaviour:
     hdShadowInitParams:
       maxShadowRequests: 64
       directionalShadowsDepthBits: 32
-      shadowFilteringQuality: 0
+      shadowFilteringQuality: 1
       punctualLightShadowAtlas:
         shadowAtlasResolution: 4096
         shadowAtlasDepthBits: 32
@@ -317,7 +317,7 @@ MonoBehaviour:
       ChromaticAberrationMaxSamples: 03000000060000000c000000
     lightSettings:
       useContactShadow:
-        m_Values: 
+        m_Values: 000001
         m_SchemaId:
           m_Id: 
     maximumLODLevel:
